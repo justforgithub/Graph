@@ -13,11 +13,11 @@ import java.util.Iterator;
  */
 public class GraphNode {
 
-    public ArrayList<GraphEdge> graphEdges;
+    private ArrayList<GraphEdge> graphEdges;
     private Graph graph;
     private double x;
     private double y;
-    public StackPane pane;
+    private StackPane pane;
     private Group group;
 
 
@@ -62,6 +62,10 @@ public class GraphNode {
         this.y = y;
     }
 
+    public StackPane getPane(){
+        return pane;
+    }
+
     /**
      * sums up the weights of incoming graphEdges
      * @return weights
@@ -97,23 +101,9 @@ public class GraphNode {
         pane.setTranslateY(y - Values.nodeRadius);
         pane.setOnMousePressed((event) ->{
             System.out.println("Pressed entered");
+            System.out.println(event.getButton().name());
         });
 
-        pane.setOnMouseReleased((event) ->{
-            System.out.println("Reseased");
-        });
-
-        pane.setOnMouseDragEntered((event) ->{
-            System.out.println("Drag entered");
-        });
-
-        pane.setOnMouseReleased((event) ->{
-            System.out.println("Drag Released");
-        });
-
-        pane.setOnDragDropped((event) ->{
-            System.out.println("drag dropped");
-        });
 
         return pane;
     }
