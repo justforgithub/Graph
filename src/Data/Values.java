@@ -13,7 +13,9 @@ public class Values {
 
     public static final double lineStroke = 2.0;
 
-    public static final Color circleFill = Color.YELLOW;
+    public static final Color circleFill = Color.WHITE;
+
+    public static final Color circleFillunsat = Color.YELLOW;
 
     public static final Color circleStroke = Color.BLACK;
 

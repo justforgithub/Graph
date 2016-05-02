@@ -88,13 +88,15 @@ public class GraphNode {
     private StackPane drawObject(){
 
         Rectangle rectangle = new Rectangle(Values.nodeRadius, Values.nodeRadius);
-        rectangle.setFill(Values.circleFill);
+
+        int weights = getIncomingWeights();
+        rectangle.setFill(weights >= 2? Values.circleFill: Values.circleFillunsat);
         rectangle.setStroke(Values.circleStroke);
 
         pane.getChildren().clear();
 
         // Label circle with weight of the GraphNode
-        Text text = new Text(Integer.toString(getIncomingWeights()));
+        Text text = new Text(Integer.toString(weights));
 
         pane.getChildren().addAll(rectangle, text);
         pane.setTranslateX(x - Values.nodeRadius);

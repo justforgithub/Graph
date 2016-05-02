@@ -49,14 +49,9 @@ public class UI extends Application{
 
         drawPane.setOnMouseClicked((event) -> {
             if(event.getButton().equals(MouseButton.PRIMARY)){
-                graph.graphNodes.get(0).SetCoordinates(event.getX(), event.getY());
-                graph.graphNodes.get(0).updateObject();
-            }
-            if (event.getButton().equals(MouseButton.SECONDARY)){
                 graph.graphNodes.get(1).SetCoordinates(event.getX(), event.getY());
                 graph.graphNodes.get(1).updateObject();
             }
-
 
         });
 
