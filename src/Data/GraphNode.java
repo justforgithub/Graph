@@ -114,7 +114,14 @@ public class GraphNode {
     public void updateObject(){
         group.getChildren().clear();
         group.getChildren().add(drawObject());
+        updateEdges();
 
+    }
+
+    public void updateEdges(){
+        for(GraphEdge currentEdge: graphEdges){
+            currentEdge.drawObject();
+        }
     }
 
 }

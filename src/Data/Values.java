@@ -9,7 +9,9 @@ public class Values {
 
     public static final double nodeRadius = 20.0;
 
-    public static final double arrowRadius = 5;
+    public static final double arrowRadius = 8.0;
+
+    public static final double lineStroke = 2.0;
 
     public static final Color circleFill = Color.YELLOW;
 
