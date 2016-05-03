@@ -3,11 +3,11 @@ package Data;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 
@@ -60,38 +60,11 @@ public class GraphEdge {
      */
     public Group drawObject(){
 
-        Color lineColor = weight<2? Values.Weight1Color: Values.Weight2Color;
+        Color lineColor = weight < 2 ? Values.Weight1Color : Values.Weight2Color;
         Pane originPane = originGraphNode.getPane();
         Pane directionPane = directionGraphNode.getPane();
-        Line line = new Line();
-        line.setStroke(lineColor);
-        line.setFill(lineColor);
-        line.setStrokeWidth(Values.lineStroke);
 
-        // bind the line properties
-        line.startXProperty().bind(originPane.translateXProperty());
-        line.startYProperty().bind(originPane.translateYProperty());
-        line.endXProperty().bind(directionPane.translateXProperty());
-        line.endYProperty().bind(directionPane.translateYProperty());
-
-        DoubleProperty centerX = new SimpleDoubleProperty();
-        DoubleProperty centerY = new SimpleDoubleProperty();
-        DoubleProperty arrowAngle = new SimpleDoubleProperty();
-
-        // Change Arrow every time the line changes
-        ChangeListener arrowListener = (a, b, c)->  {
-                centerX.set((line.startXProperty().doubleValue() + line.endXProperty().doubleValue())/2);
-                centerY.set((line.startYProperty().doubleValue() + line.endYProperty().doubleValue())/2);
-                arrowAngle.set((Math.atan2(line.endYProperty().doubleValue() - line.startYProperty().doubleValue(), line.endXProperty().doubleValue() - line.startXProperty().doubleValue()) * 180 / 3.14));
-
-        };
-
-        line.startXProperty().addListener(arrowListener);
-        line.startYProperty().addListener(arrowListener);
-        line.endXProperty().addListener(arrowListener);
-        line.endYProperty().addListener(arrowListener);
-
-
+        Group edgeGroup = new Group();
 
 
         // draw Arrow
@@ -102,48 +75,138 @@ public class GraphEdge {
                 -Values.arrowRadius, -Values.arrowRadius,
                 Values.arrowRadius, -Values.arrowRadius});
 
-        double endy = line.getEndY();
-        double endx = line.getEndX();
-        double starty = line.getStartY();
-        double startx = line.getStartX();
+        // Edge to the own Node
+        boolean isCircledEdge = originGraphNode.equals(directionGraphNode);
 
+        if(isCircledEdge){
+            // Circle for circled edge
+            Circle circle = new Circle(Values.nodeRadius*0.75, Color.TRANSPARENT);
+            circle.setStroke(lineColor);
+            circle.setStrokeWidth(Values.lineStroke);
 
-        double angle = Math.atan2(endy - starty, endx - startx) * 180 / 3.14;
+            // not allowed to be clickable
+            circle.setMouseTransparent(true);
 
-        arrow.setRotate((angle - 90));
+            // Property for circle and arrow X center
+            DoubleProperty circleCenterX = new SimpleDoubleProperty();
+            // Property for circle Y center
+            DoubleProperty circleCenterY = new SimpleDoubleProperty();
+            // Property for arrow Y center
+            DoubleProperty arrowCenterY = new SimpleDoubleProperty();
 
-        arrow.setTranslateX((startx + endx)/2);
-        arrow.setTranslateY((starty + endy)/2);
+            // calculate values for shapes
+            circleCenterX.set(originPane.getTranslateX()+0.5*Values.nodeRadius);
+            circleCenterY.set(originPane.getTranslateY());
+            arrowCenterY.set(originPane.getTranslateY() - Values.nodeRadius + Values.arrowRadius*0.5);
 
+            // listener for node movement
+            ChangeListener circleListener = (a, b, c) ->{
+                circleCenterX.set(originPane.getTranslateX()+0.5*Values.nodeRadius);
+                circleCenterY.set(originPane.getTranslateY());
+                arrowCenterY.set(originPane.getTranslateY() - Values.nodeRadius + Values.arrowRadius*0.5);
+            };
 
-        centerX.addListener((value)->{
-            arrow.setTranslateX(centerX.doubleValue());
-        });
+            // bind circle and arrow to node movement
+            originPane.translateXProperty().addListener(circleListener);
+            originPane.translateYProperty().addListener(circleListener);
 
-        centerY.addListener((value)->{
-            arrow.setTranslateY(centerY.doubleValue());
-        });
+            circle.centerXProperty().bind(circleCenterX);
+            circle.centerYProperty().bind(circleCenterY);
 
-        arrowAngle.addListener((value)->{
-            arrow.setRotate(arrowAngle.doubleValue() - 90);
-        });
+            arrow.setRotate(90);
+            arrow.translateXProperty().bind(circleCenterX);
+            arrow.translateYProperty().bind(arrowCenterY);
 
-        // Arrow keyhandler for direction toggle
-        arrow.setOnMousePressed((event)->{
-            if(event.getButton().equals(MouseButton.SECONDARY)){
-                if(event.isShiftDown()){
-                    toggleWeight();
-                } else {
-                    swapEdgeDirection();
+            // Arrow keyhandler for direction toggle
+            arrow.setOnMousePressed((event) -> {
+                if (event.getButton().equals(MouseButton.SECONDARY)) {
+                    if (event.isShiftDown()) {
+                        toggleWeight();
+                    } else {
+                        // no function, just for user feedback
+                        arrow.setRotate(arrow.getRotate() - 180);
+                    }
                 }
-            }
-        });
+            });
+            edgeGroup.getChildren().addAll(circle, arrow);
+
+        // normal edge
+        } else {
 
 
-        Group group = new Group();
-        group.getChildren().addAll(line, arrow);
+            Line line = new Line();
+            line.setStroke(lineColor);
+            line.setFill(lineColor);
+            line.setStrokeWidth(Values.lineStroke);
 
-        return group;
+            // not allowed to be clickable
+            line.setMouseTransparent(true);
+
+            // bind the line properties
+            line.startXProperty().bind(originPane.translateXProperty());
+            line.startYProperty().bind(originPane.translateYProperty());
+            line.endXProperty().bind(directionPane.translateXProperty());
+            line.endYProperty().bind(directionPane.translateYProperty());
+
+            DoubleProperty centerX = new SimpleDoubleProperty();
+            DoubleProperty centerY = new SimpleDoubleProperty();
+            DoubleProperty arrowAngle = new SimpleDoubleProperty();
+
+            // Change Arrow every time the line changes
+            ChangeListener arrowListener = (a, b, c) -> {
+                centerX.set((line.startXProperty().doubleValue() + line.endXProperty().doubleValue()) / 2);
+                centerY.set((line.startYProperty().doubleValue() + line.endYProperty().doubleValue()) / 2);
+                arrowAngle.set((Math.atan2(line.endYProperty().doubleValue() - line.startYProperty().doubleValue(), line.endXProperty().doubleValue() - line.startXProperty().doubleValue()) * 180 / 3.14));
+
+            };
+
+            line.startXProperty().addListener(arrowListener);
+            line.startYProperty().addListener(arrowListener);
+            line.endXProperty().addListener(arrowListener);
+            line.endYProperty().addListener(arrowListener);
+
+
+
+            double endy = line.getEndY();
+            double endx = line.getEndX();
+            double starty = line.getStartY();
+            double startx = line.getStartX();
+
+
+            double angle = Math.atan2(endy - starty, endx - startx) * 180 / 3.14;
+
+            arrow.setRotate((angle - 90));
+
+            arrow.setTranslateX((startx + endx) / 2);
+            arrow.setTranslateY((starty + endy) / 2);
+
+
+            centerX.addListener((value) -> {
+                arrow.setTranslateX(centerX.doubleValue());
+            });
+
+            centerY.addListener((value) -> {
+                arrow.setTranslateY(centerY.doubleValue());
+            });
+
+            arrowAngle.addListener((value) -> {
+                arrow.setRotate(arrowAngle.doubleValue() - 90);
+            });
+
+            // Arrow keyhandler for direction toggle
+            arrow.setOnMousePressed((event) -> {
+                if (event.getButton().equals(MouseButton.SECONDARY)) {
+                    if (event.isShiftDown()) {
+                        toggleWeight();
+                    } else {
+                        swapEdgeDirection();
+                    }
+                }
+            });
+
+            edgeGroup.getChildren().addAll(line, arrow);
+        }
+        return edgeGroup;
 
     }
 

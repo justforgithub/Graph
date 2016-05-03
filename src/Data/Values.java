@@ -24,4 +24,10 @@ public class Values {
     public static final Color Weight2Color = Color.DARKBLUE;
 
     public enum PaneState {IDLE, GRAPHEDGE, GRAPHNODE, SELECTED};
+
+    public static final int standardWeight = 1;
+
+    public static final String weightButtonSelected = "Edge Weight: 1";
+
+    public static final String weightButtonUnselected = "Edge Weight: 2";
 }

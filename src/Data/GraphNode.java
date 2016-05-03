@@ -34,17 +34,19 @@ public class GraphNode {
 
     /**
      * add GraphEdge to GraphNode
+     *
      * @param graphEdge
      */
-    public void addEdge(GraphEdge graphEdge){
+    public void addEdge(GraphEdge graphEdge) {
         graphEdges.add(graphEdge);
     }
 
     /**
      * Remove GraphEdge from GraphNode
+     *
      * @param graphEdge
      */
-    public void removeEdge(GraphEdge graphEdge){
+    public void removeEdge(GraphEdge graphEdge) {
         for (Iterator<GraphEdge> iter = graphEdges.listIterator(); iter.hasNext(); ) {
             GraphEdge currentGraphEdge = iter.next();
             if (currentGraphEdge.equals(graphEdge)) {
@@ -53,44 +55,51 @@ public class GraphNode {
         }
     }
 
-    public Group getGroup(){
+    public Group getGroup() {
         return group;
     }
 
-    public void SetCoordinates(double x, double y){
+    public void SetCoordinates(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
-    public StackPane getPane(){
+    public StackPane getPane() {
         return pane;
     }
 
     /**
      * sums up the weights of incoming graphEdges
+     *
      * @return weights
      */
-    public int getIncomingWeights(){
-        int weight = 0;
-        for(GraphEdge currentGraphEdge : graphEdges){
-            if(this.equals(currentGraphEdge.getDirectionGraphNode())){
-                weight += currentGraphEdge.getWeight();
+    public int getIncomingWeights() {
+        double weight = 0.0;
+        for (GraphEdge currentGraphEdge : graphEdges) {
+            if (this.equals(currentGraphEdge.getDirectionGraphNode())) {
+                // Workaround for double scoring of circle edge
+                if (currentGraphEdge.getDirectionGraphNode().equals(currentGraphEdge.getOriginGraphNode())) {
+                    weight += currentGraphEdge.getWeight() * 0.5;
+                } else {
+                    weight += currentGraphEdge.getWeight();
+                }
             }
         }
-        return weight;
+        return (int) weight;
     }
 
 
     /**
      * Drawing function for Circle
+     *
      * @return labeled circle
      */
-    private StackPane drawObject(){
+    private StackPane drawObject() {
 
         Rectangle rectangle = new Rectangle(Values.nodeRadius, Values.nodeRadius);
 
         int weights = getIncomingWeights();
-        rectangle.setFill(weights >= 2? Values.circleFill: Values.circleFillunsat);
+        rectangle.setFill(weights >= 2 ? Values.circleFill : Values.circleFillunsat);
         rectangle.setStroke(Values.circleStroke);
 
         pane.getChildren().clear();
@@ -101,9 +110,19 @@ public class GraphNode {
         pane.getChildren().addAll(rectangle, text);
         pane.setTranslateX(x - Values.nodeRadius);
         pane.setTranslateY(y - Values.nodeRadius);
-        pane.setOnMousePressed((event) ->{
-            System.out.println("Pressed entered");
-            System.out.println(event.getButton().name());
+        pane.setOnMousePressed((event) -> {
+            if (graph.graphState == Values.PaneState.GRAPHEDGE) {
+                if (graph.firstNodeSelection == null) {
+                    System.out.println("first selected");
+                    graph.firstNodeSelection = this;
+                } else {
+                    if (graph.isEdgeExistent(graph.firstNodeSelection, this)) {
+                        System.out.println("Edge existant");
+                    } else {
+                        graph.secondNodeSelection = this;
+                    }
+                }
+            }
         });
 
 
@@ -113,15 +132,15 @@ public class GraphNode {
     /**
      * Redraws Shape
      */
-    public void updateObject(){
+    public void updateObject() {
         group.getChildren().clear();
         group.getChildren().add(drawObject());
         updateEdges();
 
     }
 
-    public void updateEdges(){
-        for(GraphEdge currentEdge: graphEdges){
+    public void updateEdges() {
+        for (GraphEdge currentEdge : graphEdges) {
             currentEdge.drawObject();
         }
     }
