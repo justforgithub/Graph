@@ -15,6 +15,7 @@ public class Graph {
     public ArrayList<GraphNode> graphNodes;
     public PaneState graphState;
     public int graphWeigth;
+    // Selcetion for Edge generation: first and second node
     public GraphNode firstNodeSelection;
     public GraphNode secondNodeSelection;
 
@@ -23,19 +24,37 @@ public class Graph {
         reset();
     }
 
+    /**
+     * Generate Node at pos x, y
+     * @param x
+     * @param y
+     * @return
+     */
     public GraphNode generateGraphNode(double x, double y){
         GraphNode graphNode = new GraphNode(this, x, y);
         graphNodes.add(graphNode);
         return graphNode;
     }
 
+    /**
+     * Generate Edge between 2 Nodes with weight
+     * @param weight
+     * @param originGraphNode
+     * @param directionGraphNode
+     * @return
+     */
     public GraphEdge generateGraphEdge(int weight,GraphNode originGraphNode,GraphNode directionGraphNode){
         GraphEdge graphEdge = new GraphEdge(weight, originGraphNode, directionGraphNode, this);
         graphEdges.add(graphEdge);
         return graphEdge;
     }
 
-    // Checks if there is already an edge between 2 nodes
+    /**
+     * Check if there is already an edge between 2 nodes
+     * @param node1
+     * @param node2
+     * @return
+     */
     public boolean isEdgeExistent(GraphNode node1, GraphNode node2){
         boolean isEdge = false;
         for (GraphEdge currentEdge: graphEdges){
@@ -48,7 +67,9 @@ public class Graph {
         return isEdge;
     }
 
-    // Resets the graph
+    /**
+     * Completely reset the graph
+     */
     public void reset(){
         graphEdges = new ArrayList<>();
         graphNodes = new ArrayList<>();

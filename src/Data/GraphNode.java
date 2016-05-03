@@ -139,7 +139,10 @@ public class GraphNode {
 
     }
 
-    public void updateEdges() {
+    /**
+     * helper for updateObject
+     */
+    private void updateEdges() {
         for (GraphEdge currentEdge : graphEdges) {
             currentEdge.drawObject();
         }
