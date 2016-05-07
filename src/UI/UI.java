@@ -3,6 +3,7 @@ package UI;
 import Data.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -45,7 +46,7 @@ public class UI extends Application{
                         break;
                     // Node: generate Graph on mouse position
                     case GRAPHNODE:
-                        drawPane.getChildren().add(graph.generateGraphNode(event.getX(), event.getY()).getGroup());
+                        drawPane.getChildren().add(graph.generateStandardGraphNode(event.getX(), event.getY()).getGroup());
                         break;
                     // Edge: generate edge between 2 nodes, if possible
                     case GRAPHEDGE:
@@ -78,6 +79,7 @@ public class UI extends Application{
 
         // Submenuitems
         MenuItem predefined1SubItem = new MenuItem("Simple Graph");
+        MenuItem predefined2SubItem = new MenuItem("Conversion Example");
 
         // Checkmenuitems
         CheckMenuItem satCheckItem = new CheckMenuItem("allow invalid edge swaps [TODO]");
@@ -86,7 +88,7 @@ public class UI extends Application{
         fileMenu.getItems().addAll(clearItem, predefinedItem, loadItem, saveItem, exitItem);
         optionsMenu.getItems().addAll(satCheckItem);
 
-        predefinedItem.getItems().addAll(predefined1SubItem);
+        predefinedItem.getItems().addAll(predefined1SubItem, predefined2SubItem);
 
         // Togglebuttons
         ToggleButton cancelButton = new ToggleButton("Cancel [ESC]");
@@ -186,7 +188,15 @@ public class UI extends Application{
 
         // first Graph example
         predefined1SubItem.setOnAction(event -> {
+            graph.reset();
             ExampleGraphs.example1(graph);
+            fillPanewithGraphElements(drawPane, graph);
+        });
+
+        // second Graph example
+        predefined2SubItem.setOnAction(event -> {
+            graph.reset();
+            ExampleGraphs.conversionExample(graph);
             fillPanewithGraphElements(drawPane, graph);
         });
 
@@ -247,7 +257,7 @@ public class UI extends Application{
         for(GraphEdge currentEdge: graph.graphEdges){
             pane.getChildren().add(currentEdge.getGroup());
         }
-        for(GraphNode currentNode: graph.graphNodes){
+        for(AGraphNode currentNode: graph.graphNodes){
             pane.getChildren().add(currentNode.getGroup());
         }
     }

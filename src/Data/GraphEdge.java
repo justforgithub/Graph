@@ -17,15 +17,15 @@ import javafx.scene.shape.Polygon;
 public class GraphEdge {
 
     private int weight;
-    private GraphNode originGraphNode;
-    private GraphNode directionGraphNode;
+    private AGraphNode originGraphNode;
+    private AGraphNode directionGraphNode;
     private Graph graph;
     private Group group;
 
 
 
     // Constructor
-    public GraphEdge(int weight, GraphNode originGraphNode, GraphNode directionGraphNode, Graph graph) {
+    public GraphEdge(int weight, AGraphNode originGraphNode, AGraphNode directionGraphNode, Graph graph) {
         this.weight = weight;
         this.originGraphNode = originGraphNode;
         this.directionGraphNode = directionGraphNode;
@@ -42,11 +42,11 @@ public class GraphEdge {
         return weight;
     }
 
-    public GraphNode getOriginGraphNode() {
+    public AGraphNode getOriginGraphNode() {
         return originGraphNode;
     }
 
-    public GraphNode getDirectionGraphNode() {
+    public AGraphNode getDirectionGraphNode() {
         return directionGraphNode;
     }
 
@@ -215,8 +215,8 @@ public class GraphEdge {
      * swaps the arrow direction of the edge
      */
     public void swapEdgeDirection(){
-        GraphNode oldOrigin = originGraphNode;
-        GraphNode oldDirection = directionGraphNode;
+        AGraphNode oldOrigin = originGraphNode;
+        AGraphNode oldDirection = directionGraphNode;
         originGraphNode = oldDirection;
         directionGraphNode = oldOrigin;
         originGraphNode.updateObject();

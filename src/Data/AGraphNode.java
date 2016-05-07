@@ -2,27 +2,31 @@ package Data;
 
 import javafx.scene.Group;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Created by Deviltech on 28.04.2016.
+ * Created by Deviltech on 07.05.2016.
  */
-public class GraphNode {
+public abstract class AGraphNode {
 
-    private ArrayList<GraphEdge> graphEdges;
-    private Graph graph;
-    private double x;
-    private double y;
-    private StackPane pane;
-    private Group group;
+
+    public ArrayList<GraphEdge> graphEdges;
+    public Graph graph;
+    public double x;
+    public double y;
+    public StackPane pane;
+    public Group group;
 
 
     // Constructor
-    public GraphNode(Graph graph, double x, double y) {
+    public AGraphNode(Graph graph, double x, double y) {
         this.graphEdges = new ArrayList<>();
         this.graph = graph;
         this.x = x;
@@ -32,8 +36,10 @@ public class GraphNode {
 
     }
 
+
+
     /**
-     * add GraphEdge to GraphNode
+     * add GraphEdge to StandardGraphNode
      *
      * @param graphEdge
      */
@@ -42,7 +48,7 @@ public class GraphNode {
     }
 
     /**
-     * Remove GraphEdge from GraphNode
+     * Remove GraphEdge from StandardGraphNode
      *
      * @param graphEdge
      */
@@ -94,22 +100,25 @@ public class GraphNode {
      *
      * @return labeled circle
      */
-    private StackPane drawObject() {
+    private Group drawObject() {
 
-        Rectangle rectangle = new Rectangle(Values.nodeRadius, Values.nodeRadius);
+        group = new Group();
+
+        double radius = Values.nodeRadius;
+
+        Rectangle rectangle = new Rectangle(radius, radius);
 
         int weights = getIncomingWeights();
-        rectangle.setFill(weights >= 2 ? Values.circleFill : Values.circleFillunsat);
+        // if satisfied, draw different fill color
+        rectangle.setFill(isSatisfied()? Values.circleFill : Values.circleFillunsat);
         rectangle.setStroke(Values.circleStroke);
 
-        pane.getChildren().clear();
-
-        // Label circle with weight of the GraphNode
+        // Label circle with weight of the StandardGraphNode
         Text text = new Text(Integer.toString(weights));
 
         pane.getChildren().addAll(rectangle, text);
-        pane.setTranslateX(x - Values.nodeRadius);
-        pane.setTranslateY(y - Values.nodeRadius);
+        pane.setTranslateX(x - radius);
+        pane.setTranslateY(y - radius);
         pane.setOnMousePressed((event) -> {
             if (graph.graphState == Values.PaneState.GRAPHEDGE) {
                 if (graph.firstNodeSelection == null) {
@@ -126,7 +135,13 @@ public class GraphNode {
         });
 
 
-        return pane;
+
+        Group backgroundGroup = generateBackgroundShape(x-radius*0.5, y-radius*0.5, radius);
+        group.getChildren().addAll(backgroundGroup.getChildren());
+        System.out.println(backgroundGroup.getChildren().size());
+        group.getChildren().add(pane);
+
+        return group;
     }
 
     /**
@@ -147,5 +162,20 @@ public class GraphNode {
             currentEdge.drawObject();
         }
     }
+
+    /**
+     * Checks if graph Node is satisfied
+     * @return
+     */
+    public abstract boolean isSatisfied();
+
+    /**
+     * generate Background Symbol for drawn Node
+     * @param x
+     * @param y
+     * @param radius
+     */
+    public abstract Group generateBackgroundShape(double x, double y, double radius);
+
 
 }

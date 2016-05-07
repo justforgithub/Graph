@@ -25,7 +25,11 @@ public class Values {
 
     public enum PaneState {IDLE, GRAPHEDGE, GRAPHNODE, SELECTED};
 
-    public static final int standardWeight = 1;
+    public static final int standardWeight1 = 1;
+
+    public static final int standardWeight2 = 2;
+
+    public static final int standardSatisfied = standardWeight2;
 
     public static final String weightButtonSelected = "Edge Weight: 1";
 

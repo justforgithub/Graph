@@ -2,9 +2,8 @@ package Data;
 
 import java.util.ArrayList;
 import Data.Values.*;
-import javafx.scene.Group;
 
-import static Data.Values.standardWeight;
+import static Data.Values.standardWeight1;
 
 /**
  * Created by Deviltech on 02.05.2016.
@@ -12,12 +11,12 @@ import static Data.Values.standardWeight;
 public class Graph {
 
     public ArrayList<GraphEdge> graphEdges;
-    public ArrayList<GraphNode> graphNodes;
+    public ArrayList<AGraphNode> graphNodes;
     public PaneState graphState;
     public int graphWeigth;
     // Selcetion for Edge generation: first and second node
-    public GraphNode firstNodeSelection;
-    public GraphNode secondNodeSelection;
+    public AGraphNode firstNodeSelection;
+    public AGraphNode secondNodeSelection;
 
 
     public Graph(){
@@ -25,13 +24,26 @@ public class Graph {
     }
 
     /**
-     * Generate Node at pos x, y
+     * Generate Standard Node at pos x, y
      * @param x
      * @param y
      * @return
      */
-    public GraphNode generateGraphNode(double x, double y){
-        GraphNode graphNode = new GraphNode(this, x, y);
+    public AGraphNode generateStandardGraphNode(double x, double y){
+        AGraphNode graphNode = new StandardGraphNode(this, x, y);
+        graphNodes.add(graphNode);
+        return graphNode;
+    }
+
+
+    /**
+     * Generate Conversion Graphnode at pos x, y
+     * @param x
+     * @param y
+     * @return
+     */
+    public AGraphNode generateConversionGraphNode(double x, double y){
+        AGraphNode graphNode = new ConversionGraphNode(this, x, y);
         graphNodes.add(graphNode);
         return graphNode;
     }
@@ -43,7 +55,7 @@ public class Graph {
      * @param directionGraphNode
      * @return
      */
-    public GraphEdge generateGraphEdge(int weight,GraphNode originGraphNode,GraphNode directionGraphNode){
+    public GraphEdge generateGraphEdge(int weight,AGraphNode originGraphNode,AGraphNode directionGraphNode){
         GraphEdge graphEdge = new GraphEdge(weight, originGraphNode, directionGraphNode, this);
         graphEdges.add(graphEdge);
         return graphEdge;
@@ -55,7 +67,7 @@ public class Graph {
      * @param node2
      * @return
      */
-    public boolean isEdgeExistent(GraphNode node1, GraphNode node2){
+    public boolean isEdgeExistent(AGraphNode node1, AGraphNode node2){
         boolean isEdge = false;
         for (GraphEdge currentEdge: graphEdges){
             if((currentEdge.getDirectionGraphNode().equals(node1) && currentEdge.getOriginGraphNode().equals(node2))
@@ -73,7 +85,7 @@ public class Graph {
     public void reset(){
         graphEdges = new ArrayList<>();
         graphNodes = new ArrayList<>();
-        graphWeigth = standardWeight;
+        graphWeigth = standardWeight1;
         graphState = PaneState.IDLE;
         firstNodeSelection = null;
         secondNodeSelection = null;
