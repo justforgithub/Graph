@@ -30,7 +30,7 @@ public class GraphEdge {
         this.originGraphNode = originGraphNode;
         this.directionGraphNode = directionGraphNode;
         this.graph = graph;
-        this.group = new Group(drawObject());
+        this.group = drawObject();
 
         originGraphNode.addEdge(this);
         directionGraphNode.addEdge(this);
@@ -87,17 +87,22 @@ public class GraphEdge {
             // not allowed to be clickable
             circle.setMouseTransparent(true);
 
-            // Property for circle and arrow X center
+            // Property for loop circle and arrow X center
             DoubleProperty circleCenterX = new SimpleDoubleProperty();
-            // Property for circle Y center
+            // Property for loop circle Y center
             DoubleProperty circleCenterY = new SimpleDoubleProperty();
             // Property for arrow Y center
             DoubleProperty arrowCenterY = new SimpleDoubleProperty();
+
+
 
             // calculate values for shapes
             circleCenterX.set(originPane.getTranslateX()+0.5*Values.nodeRadius);
             circleCenterY.set(originPane.getTranslateY());
             arrowCenterY.set(originPane.getTranslateY() - Values.nodeRadius + Values.arrowRadius*0.5);
+
+
+
 
             // listener for node movement
             ChangeListener circleListener = (a, b, c) ->{
@@ -142,15 +147,27 @@ public class GraphEdge {
             // not allowed to be clickable
             line.setMouseTransparent(true);
 
-            // bind the line properties
-            line.startXProperty().bind(originPane.translateXProperty());
-            line.startYProperty().bind(originPane.translateYProperty());
-            line.endXProperty().bind(directionPane.translateXProperty());
-            line.endYProperty().bind(directionPane.translateYProperty());
-
+            // Properties for arrow
             DoubleProperty centerX = new SimpleDoubleProperty();
             DoubleProperty centerY = new SimpleDoubleProperty();
             DoubleProperty arrowAngle = new SimpleDoubleProperty();
+
+            // Property for origin node Center X
+            DoubleProperty originNodeCenterX = new SimpleDoubleProperty();
+            // Property for origin node Center Y
+            DoubleProperty originNodeCenterY = new SimpleDoubleProperty();
+
+            // Property for direction node Center X
+            DoubleProperty directionNodeCenterX = new SimpleDoubleProperty();
+            // Property for origin node Center Y
+            DoubleProperty directionNodeCenterY = new SimpleDoubleProperty();
+
+
+            originNodeCenterX.set(originPane.getTranslateX() + originPane.getWidth()*0.5);
+            originNodeCenterY.set(originPane.getTranslateY() + originPane.getHeight()*0.5);
+
+            directionNodeCenterX.set(directionPane.getTranslateX() + directionPane.getWidth()*0.5);
+            directionNodeCenterY.set(directionPane.getTranslateY() + directionPane.getHeight()*0.5);
 
             // Change Arrow every time the line changes
             ChangeListener arrowListener = (a, b, c) -> {
@@ -158,7 +175,20 @@ public class GraphEdge {
                 centerY.set((line.startYProperty().doubleValue() + line.endYProperty().doubleValue()) / 2);
                 arrowAngle.set((Math.atan2(line.endYProperty().doubleValue() - line.startYProperty().doubleValue(), line.endXProperty().doubleValue() - line.startXProperty().doubleValue()) * 180 / 3.14));
 
+                originNodeCenterX.set(originPane.getTranslateX() + originPane.getWidth()*0.5);
+                originNodeCenterY.set(originPane.getTranslateY() + originPane.getHeight()*0.5);
+
+                directionNodeCenterX.set(directionPane.getTranslateX() + directionPane.getWidth()*0.5);
+                directionNodeCenterY.set(directionPane.getTranslateY() + directionPane.getHeight()*0.5);
+
             };
+
+
+            // bind the line properties
+            line.startXProperty().bind(originNodeCenterX);
+            line.startYProperty().bind(originNodeCenterY);
+            line.endXProperty().bind(directionNodeCenterX);
+            line.endYProperty().bind(directionNodeCenterY);
 
             line.startXProperty().addListener(arrowListener);
             line.startYProperty().addListener(arrowListener);

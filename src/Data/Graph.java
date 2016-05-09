@@ -1,7 +1,13 @@
 package Data;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import Data.Values.*;
+import UI.SelectionModel;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 
 import static Data.Values.standardWeight1;
 
@@ -30,7 +36,7 @@ public class Graph {
      * @return
      */
     public AGraphNode generateStandardGraphNode(double x, double y){
-        AGraphNode graphNode = new StandardGraphNode(this, x, y);
+        AGraphNode graphNode = new StandardGraphNode(this, x + Values.nodeRadius , y + Values.nodeRadius);
         graphNodes.add(graphNode);
         return graphNode;
     }
@@ -92,8 +98,37 @@ public class Graph {
     }
 
 
+    /**
+     * Deletes all selected elements from pane and graph
+     * @param selectionModel
+     * @param drawPane
+     */
+    public void deleteSelectedElements(SelectionModel selectionModel, Pane drawPane) {
+        for (Iterator<Node> selectionIter = selectionModel.getIterator(); selectionIter.hasNext(); ) {
+            Node node = selectionIter.next();
+            System.out.println(node);
+            Group g = (Group) node;
+            System.out.println(g.getChildren().size());
+            // TODO: Remove Node
 
 
+            ArrayList<GraphEdge> toBeDeleted = new ArrayList<>();
+            // remove edge
+            for(GraphEdge currentGraphEdge: graphEdges){
+                if(node.equals(currentGraphEdge.getGroup())){
+                    currentGraphEdge.getDirectionGraphNode().removeEdge(currentGraphEdge);
+                    currentGraphEdge.getOriginGraphNode().removeEdge(currentGraphEdge);
+                    // Add to list to delete from graph later
+                    toBeDeleted.add(currentGraphEdge);
+                    drawPane.getChildren().remove(currentGraphEdge.getGroup());
+                }
+            }
+            // delete from graph
+            for(GraphEdge currentDelete: toBeDeleted){
+                graphEdges.remove(currentDelete);
+            }
+        }
 
-
+    }
 }
+

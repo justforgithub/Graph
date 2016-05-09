@@ -57,6 +57,7 @@ public abstract class AGraphNode {
             GraphEdge currentGraphEdge = iter.next();
             if (currentGraphEdge.equals(graphEdge)) {
                 iter.remove();
+                updateObject();
             }
         }
     }
@@ -140,6 +141,7 @@ public abstract class AGraphNode {
         group.getChildren().addAll(backgroundGroup.getChildren());
         System.out.println(backgroundGroup.getChildren().size());
         group.getChildren().add(pane);
+        pane.toFront();
 
         return group;
     }
@@ -149,8 +151,8 @@ public abstract class AGraphNode {
      */
     public void updateObject() {
         group.getChildren().clear();
-        group.getChildren().add(drawObject());
         updateEdges();
+        group.getChildren().add(drawObject());
 
     }
 
@@ -160,8 +162,13 @@ public abstract class AGraphNode {
     private void updateEdges() {
         for (GraphEdge currentEdge : graphEdges) {
             currentEdge.drawObject();
+            // Place Edge behind Node
+            currentEdge.getGroup().toBack();
         }
     }
+
+
+
 
     /**
      * Checks if graph Node is satisfied
