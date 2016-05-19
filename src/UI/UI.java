@@ -87,7 +87,7 @@ public class UI extends Application {
         MenuItem clearItem = new MenuItem("Clear");
         Menu predefinedItem = new Menu("Predefined Graphs");
         MenuItem loadItem = new MenuItem("Load Graph from File");
-        MenuItem saveItem = new MenuItem("Save Graph [TODO]");
+        MenuItem saveItem = new MenuItem("Save Graph to File");
         MenuItem exitItem = new MenuItem("Exit");
 
         // Submenuitems
@@ -316,13 +316,26 @@ public class UI extends Application {
             if (file != null) {
                 try {
                     // Parse
-                    new Parser().readInFile(file, graph);
-                    // Draw to pane
-                    fillPanewithGraphElements(drawPane, graph);
+                    Parser.readInFile(file, graph, drawPane);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
             }
+        });
+
+        saveItem.setOnAction(event -> {
+            // Prepare fielChooser
+            final FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save a .graph file");
+
+            // Set extension filter
+            FileChooser.ExtensionFilter extFilter =
+                    new FileChooser.ExtensionFilter("Graph files (*.graph)", "*.graph");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            File file = fileChooser.showSaveDialog(primaryStage);
+            Parser.writeToFile(file, graph);
+
         });
 
         // first Graph example
@@ -409,7 +422,8 @@ public class UI extends Application {
         for (AGraphNode currentNode : graph.graphNodes) {
             pane.getChildren().add(currentNode.getGroup());
         }
-    }
 
+
+    }
 
 }

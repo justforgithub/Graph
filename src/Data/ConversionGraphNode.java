@@ -50,4 +50,9 @@ public class ConversionGraphNode extends AGraphNode {
         return Integer.toString(getIncomingWeights());
     }
 
+    @Override
+    public String toString() {
+        return toStringHelper("C");
+    }
+
 }

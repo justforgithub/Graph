@@ -150,7 +150,6 @@ public abstract class AGraphNode {
      */
     public void updateObject() {
 
-        //group.getChildren().clear();
         updateEdges();
         this.group.getChildren().clear();
         this.group = drawObject(this.group);
@@ -183,6 +182,10 @@ public abstract class AGraphNode {
         return g;
     }
 
+    public String toStringHelper(String s) {
+            return "NODE\t" + s + "\t" + Double.toString(x) + "\t"+Double.toString(y) + "\n" ;
+    }
+
 
 
 
@@ -205,6 +208,12 @@ public abstract class AGraphNode {
      * @return text
      */
     public abstract String generateNodeText();
+
+    /**
+     * generate String for parser
+     * @return
+     */
+    public abstract String toString();
 
 
 }

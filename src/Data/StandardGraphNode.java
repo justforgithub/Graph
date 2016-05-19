@@ -30,4 +30,9 @@ public class StandardGraphNode extends AGraphNode {
         return Integer.toString(getIncomingWeights());
     }
 
+    @Override
+    public String toString() {
+        return toStringHelper("S");
+    }
+
 }

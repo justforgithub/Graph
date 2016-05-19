@@ -11,6 +11,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 
+import static Data.Values.standardWeight1;
+import static Data.Values.standardWeight2;
+
 /**
  * Created by Deviltech on 28.04.2016.
  */
@@ -95,15 +98,10 @@ public class GraphEdge {
             // Property for arrow Y center
             DoubleProperty arrowCenterY = new SimpleDoubleProperty();
 
-
-
             // calculate values for shapes
             circleCenterX.set(originPane.getTranslateX()+0.5*Values.nodeRadius);
             circleCenterY.set(originPane.getTranslateY());
             arrowCenterY.set(originPane.getTranslateY() - Values.nodeRadius + Values.arrowRadius*0.5);
-
-
-
 
             // listener for node movement
             ChangeListener circleListener = (a, b, c) ->{
@@ -138,7 +136,6 @@ public class GraphEdge {
 
         // normal edge
         } else {
-
 
             Line line = new Line();
             line.setStroke(lineColor);
@@ -181,9 +178,7 @@ public class GraphEdge {
 
                 directionNodeCenterX.set(directionPane.getTranslateX() + directionPane.getWidth()*0.5);
                 directionNodeCenterY.set(directionPane.getTranslateY() + directionPane.getHeight()*0.5);
-
             };
-
 
             // bind the line properties
             line.startXProperty().bind(originNodeCenterX);
@@ -195,8 +190,6 @@ public class GraphEdge {
             line.startYProperty().addListener(arrowListener);
             line.endXProperty().addListener(arrowListener);
             line.endYProperty().addListener(arrowListener);
-
-
 
             double endy = line.getEndY();
             double endx = line.getEndX();
@@ -210,7 +203,6 @@ public class GraphEdge {
 
             arrow.setTranslateX((startx + endx) / 2);
             arrow.setTranslateY((starty + endy) / 2);
-
 
             centerX.addListener((value) -> {
                 arrow.setTranslateX(centerX.doubleValue());
@@ -255,21 +247,25 @@ public class GraphEdge {
 
         drawObject(group);
 
-
     }
 
     /**
-     * toggle weight between 1 and 2
+     * toggle weight between weight 1 and 2
      */
     public void toggleWeight(){
-        if(weight == 1){
-            weight = 2;
+        if(weight == standardWeight1){
+            weight = standardWeight2;
         } else {
-            weight = 1;
+            weight = standardWeight1;
         }
         originGraphNode.updateObject();
         directionGraphNode.updateObject();
-        group.getChildren().clear();
-        group.getChildren().addAll(drawObject(group).getChildren());
+
+        drawObject(group);
+    }
+
+    public String toString(){
+        return "EDGE\t" + Integer.toString(weight) + "\t" + Integer.toString(graph.graphNodes.indexOf(originGraphNode))
+                + "\t" + Integer.toString(graph.graphNodes.indexOf(directionGraphNode)) + "\n";
     }
 }

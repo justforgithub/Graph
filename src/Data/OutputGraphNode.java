@@ -36,4 +36,9 @@ public class OutputGraphNode extends AGraphNode {
     public String generateNodeText() {
         return Values.outputNodeText;
     }
+
+    @Override
+    public String toString() {
+        return toStringHelper("O");
+    }
 }

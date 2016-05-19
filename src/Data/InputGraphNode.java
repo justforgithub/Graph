@@ -35,4 +35,9 @@ public class InputGraphNode extends AGraphNode {
     public String generateNodeText() {
         return Values.inputNodeText;
     }
+
+    @Override
+    public String toString() {
+        return toStringHelper("I");
+    }
 }
