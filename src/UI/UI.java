@@ -3,8 +3,7 @@ package UI;
 import Data.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Menu;
@@ -15,16 +14,19 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import Data.Values.PaneState;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 
 /**
  * Created by Deviltech on 28.04.2016.
  */
-public class UI extends Application{
+public class UI extends Application {
 
 
     @Override
@@ -33,6 +35,8 @@ public class UI extends Application{
         SelectionModel selectionModel = new SelectionModel();
 
         ToolBar buttonToolBar = new ToolBar();
+        ToolBar nodeToolBar = new ToolBar();
+
         VBox mainBox = new VBox();
 
         Pane drawPane = new Pane();
@@ -42,39 +46,36 @@ public class UI extends Application{
 
         Graph graph = new Graph();
 
-        BooleanProperty isConversionNode = new SimpleBooleanProperty(true);
-
 
         drawPane.setOnMouseClicked((event) -> {
             // On leftclick
-            if(event.getButton().equals(MouseButton.PRIMARY)){
-                switch (graph.graphState){
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                switch (graph.graphState) {
                     // Idle: do nothing
                     case IDLE:
                         break;
+
                     // Node: generate Graph on mouse position
                     case GRAPHNODE:
-                        if(!isConversionNode.getValue()) {
-                            drawPane.getChildren().add(graph.generateStandardGraphNode(event.getX(), event.getY()).getGroup());
-                        } else {
-                            drawPane.getChildren().add(graph.generateConversionGraphNode(event.getX(), event.getY()).getGroup());
-                        }
+                        Group g = graph.generateGraphNodeByState(event.getX(), event.getY(), graph.nodeState).getGroup();
+                        drawPane.getChildren().add(g);
                         break;
+
                     // Edge: generate edge between 2 nodes, if possible
                     case GRAPHEDGE:
-                       if(graph.secondNodeSelection != null){
-                           drawPane.getChildren().add(graph.generateGraphEdge(graph.graphWeigth, graph.firstNodeSelection, graph.secondNodeSelection).getGroup());
-                           graph.firstNodeSelection.updateObject();
-                           graph.secondNodeSelection.updateObject();
-                           graph.firstNodeSelection = null;
-                           graph.secondNodeSelection = null;
-                       }
+                        if (graph.secondNodeSelection != null) {
+                            drawPane.getChildren().add(graph.generateGraphEdge(graph.graphWeigth, graph.firstNodeSelection, graph.secondNodeSelection).getGroup());
+                            graph.firstNodeSelection.updateObject();
+                            graph.secondNodeSelection.updateObject();
+                            graph.firstNodeSelection = null;
+                            graph.secondNodeSelection = null;
+                        }
                         break;
+
                     default:
                         break;
                 }
             }
-
         });
 
         // Bar and Menus
@@ -85,7 +86,7 @@ public class UI extends Application{
         // Menuitems
         MenuItem clearItem = new MenuItem("Clear");
         Menu predefinedItem = new Menu("Predefined Graphs");
-        MenuItem loadItem = new MenuItem("Load Graph [TODO]");
+        MenuItem loadItem = new MenuItem("Load Graph from File");
         MenuItem saveItem = new MenuItem("Save Graph [TODO]");
         MenuItem exitItem = new MenuItem("Exit");
 
@@ -107,13 +108,16 @@ public class UI extends Application{
         ToggleButton nodeButton = new ToggleButton("Create Node [ALT]");
         ToggleButton edgeButton = new ToggleButton("Create Edge [CTRL]");
         ToggleButton selectButton = new ToggleButton("Select Elements");
-        ToggleButton nodeTypeButton = new ToggleButton("Normal Node");
         ToggleButton weightButton = new ToggleButton("Edge weight: 1");
 
-        Button deleteSelectedButton = new Button("delete selected Edge");
+        ToggleButton standardNodeButton = new ToggleButton("Standard");
+        ToggleButton conversionNodeButton = new ToggleButton("Conversion");
+        ToggleButton inputNodeButton = new ToggleButton("Input");
+        ToggleButton outputNodeButton = new ToggleButton("Output");
+
+        Button deleteSelectedButton = new Button("delete selected Elements");
 
 
-        isConversionNode.bind(nodeTypeButton.selectedProperty());
         weightButton.setStyle("-fx-background-color: red;");
         weightButton.setText(Values.weightButtonSelected);
 
@@ -124,7 +128,14 @@ public class UI extends Application{
         buttonList.add(edgeButton);
         buttonList.add(selectButton);
 
+        ArrayList<ToggleButton> nodeButtonList = new ArrayList<>();
+        nodeButtonList.add(standardNodeButton);
+        nodeButtonList.add(conversionNodeButton);
+        nodeButtonList.add(inputNodeButton);
+        nodeButtonList.add(outputNodeButton);
+
         cancelButton.setSelected(true);
+        standardNodeButton.setSelected(true);
 
         satCheckItem.setSelected(true);
 
@@ -135,7 +146,7 @@ public class UI extends Application{
         idlePane.setPrefHeight(100);
 
         Pane nodePane = new Pane();
-        nodePane.getChildren().addAll(nodeTypeButton);
+        nodePane.getChildren().addAll(nodeToolBar);
         nodePane.setPrefHeight(100);
 
         Pane edgePane = new Pane();
@@ -151,7 +162,7 @@ public class UI extends Application{
 
 
         // Set State to IDLE
-        java.util.function.Consumer makeIDLE = (value)->{
+        java.util.function.Consumer makeIDLE = (value) -> {
             graph.graphState = PaneState.IDLE;
             cancelButton.setSelected(true);
             unselectOtherButtons(cancelButton, buttonList);
@@ -163,7 +174,7 @@ public class UI extends Application{
         };
 
         // Set State to GRAPHNODE
-        java.util.function.Consumer makeGRAPHNODE = (value)->{
+        java.util.function.Consumer makeGRAPHNODE = (value) -> {
             graph.graphState = PaneState.GRAPHNODE;
             nodeButton.setSelected(true);
             unselectOtherButtons(nodeButton, buttonList);
@@ -177,7 +188,7 @@ public class UI extends Application{
         };
 
         // Set State to GRAPHEDGE
-        java.util.function.Consumer makeGRAPHEDGE = (value)->{
+        java.util.function.Consumer makeGRAPHEDGE = (value) -> {
             graph.graphState = PaneState.GRAPHEDGE;
             edgeButton.setSelected(true);
             unselectOtherButtons(edgeButton, buttonList);
@@ -189,7 +200,7 @@ public class UI extends Application{
         };
 
         // Set State to SELECTED
-        java.util.function.Consumer makeSELECTED = (value)->{
+        java.util.function.Consumer makeSELECTED = (value) -> {
             graph.graphState = PaneState.SELECTED;
             selectButton.setSelected(true);
             unselectOtherButtons(selectButton, buttonList);
@@ -199,18 +210,37 @@ public class UI extends Application{
 
         };
 
+        // Set node Type to Standard
+        standardNodeButton.setOnAction(event -> {
+            graph.nodeState = Values.NodeState.STANDARD;
+            standardNodeButton.setSelected(true);
+            unselectOtherButtons(standardNodeButton, nodeButtonList);
+        });
 
-        nodeTypeButton.selectedProperty().addListener( event -> {
-            if(nodeTypeButton.isSelected()){
-                nodeTypeButton.setText("Conversion Node");
-            } else {
-                nodeTypeButton.setText("Normal Node");
-            }
+        // Set node Type to Conversion
+        conversionNodeButton.setOnAction(event -> {
+            graph.nodeState = Values.NodeState.CONVERSION;
+            conversionNodeButton.setSelected(true);
+            unselectOtherButtons(conversionNodeButton, nodeButtonList);
+        });
+
+        // Set node Type to Input
+        inputNodeButton.setOnAction(event -> {
+            graph.nodeState = Values.NodeState.INPUT;
+            inputNodeButton.setSelected(true);
+            unselectOtherButtons(inputNodeButton, nodeButtonList);
+        });
+
+        // Set node Type to Output
+        outputNodeButton.setOnAction(event -> {
+            graph.nodeState = Values.NodeState.OUTPUT;
+            outputNodeButton.setSelected(true);
+            unselectOtherButtons(outputNodeButton, nodeButtonList);
         });
 
         // toggle between weights
-        weightButton.selectedProperty().addListener(event ->{
-            if(!weightButton.isSelected()){
+        weightButton.selectedProperty().addListener(event -> {
+            if (!weightButton.isSelected()) {
                 weightButton.setStyle("-fx-background-color: red;");
                 weightButton.setText(Values.weightButtonSelected);
                 graph.graphWeigth = 1;
@@ -230,25 +260,25 @@ public class UI extends Application{
 
         // activate Node generation State
         nodeButton.setOnAction(event -> {
-            if(nodeButton.isSelected()){
-               makeGRAPHNODE.accept(null);
+            if (nodeButton.isSelected()) {
+                makeGRAPHNODE.accept(null);
             } else {
-               makeIDLE.accept(null);
+                makeIDLE.accept(null);
             }
         });
 
         // activate Edge generation State
         edgeButton.setOnAction(event -> {
-            if(edgeButton.isSelected()){
+            if (edgeButton.isSelected()) {
                 makeGRAPHEDGE.accept(null);
             } else {
-               makeIDLE.accept(null);
+                makeIDLE.accept(null);
             }
         });
 
         // activate Element Selection State
         selectButton.setOnAction(event -> {
-            if(selectButton.isSelected()){
+            if (selectButton.isSelected()) {
                 makeSELECTED.accept(null);
             } else {
                 makeIDLE.accept(null);
@@ -259,13 +289,40 @@ public class UI extends Application{
         //buttonToolBar.setPadding(new Insets(3, 5 ,3, 5));
         buttonToolBar.getItems().addAll(cancelButton, edgeButton, nodeButton, selectButton);
 
+        nodeToolBar.getItems().addAll(standardNodeButton, conversionNodeButton, inputNodeButton, outputNodeButton);
+
         mainBox.getChildren().addAll(menuBar, buttonToolBar, titledPane, drawPane);
 
         // Reset the view
-        clearItem.setOnAction((event)->{
+        clearItem.setOnAction((event) -> {
             graph.reset();
             drawPane.getChildren().clear();
 
+        });
+
+        // Load Files //
+        loadItem.setOnAction(event -> {
+            // Prepare fielChooser
+            final FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose a .graph file");
+
+            // Set extension filter
+            FileChooser.ExtensionFilter extFilter =
+                    new FileChooser.ExtensionFilter("Graph files (*.graph)", "*.graph");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            //Open Dialog
+            File file = fileChooser.showOpenDialog(primaryStage);
+            if (file != null) {
+                try {
+                    // Parse
+                    new Parser().readInFile(file, graph);
+                    // Draw to pane
+                    fillPanewithGraphElements(drawPane, graph);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
         });
 
         // first Graph example
@@ -282,7 +339,7 @@ public class UI extends Application{
             fillPanewithGraphElements(drawPane, graph);
         });
 
-        exitItem.setOnAction((event)->{
+        exitItem.setOnAction((event) -> {
             Platform.exit();
         });
 
@@ -293,8 +350,8 @@ public class UI extends Application{
         new RubberBandSelection(drawPane, selectionModel, graph);
 
 
-        scene.setOnKeyPressed((event)-> {
-            switch (event.getCode()){
+        scene.setOnKeyPressed((event) -> {
+            switch (event.getCode()) {
                 case ESCAPE:
                     // IDLE
                     makeIDLE.accept(null);
@@ -306,9 +363,10 @@ public class UI extends Application{
                 case CONTROL:
                     // GRAPHEDGE
                     makeGRAPHEDGE.accept(null);
-                default: break;
+                default:
+                    break;
             }
-            if(event.getCode().equals(KeyCode.ESCAPE)){
+            if (event.getCode().equals(KeyCode.ESCAPE)) {
 
             }
 
@@ -327,28 +385,31 @@ public class UI extends Application{
     /**
      * Iterate over buttons and unselect the others
      */
-    private void unselectOtherButtons(ToggleButton button,ArrayList<ToggleButton> otherButtons){
-        for(ToggleButton currentButton:  otherButtons){
-            if(!button.equals(currentButton)){
+    private void unselectOtherButtons(ToggleButton button, ArrayList<ToggleButton> otherButtons) {
+        for (ToggleButton currentButton : otherButtons) {
+            if (!button.equals(currentButton)) {
                 currentButton.setSelected(false);
             }
         }
+        button.requestFocus();
     }
 
     /**
      * fill pane with edges and nodes of the graph (overwrites existing nodes)
+     *
      * @param pane
      * @param graph
      */
-    private void fillPanewithGraphElements(Pane pane, Graph graph){
+    private void fillPanewithGraphElements(Pane pane, Graph graph) {
         // fill DrawPane with edges and Nodes of the graph
         pane.getChildren().clear();
-        for(GraphEdge currentEdge: graph.graphEdges){
+        for (GraphEdge currentEdge : graph.graphEdges) {
             pane.getChildren().add(currentEdge.getGroup());
         }
-        for(AGraphNode currentNode: graph.graphNodes){
+        for (AGraphNode currentNode : graph.graphNodes) {
             pane.getChildren().add(currentNode.getGroup());
         }
     }
+
 
 }

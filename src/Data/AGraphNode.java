@@ -4,12 +4,9 @@ import javafx.scene.Group;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by Deviltech on 07.05.2016.
@@ -32,7 +29,7 @@ public abstract class AGraphNode {
         this.x = x;
         this.y = y;
         this.pane = new StackPane();
-        this.group = new Group(drawObject());
+        this.group = drawObject(new Group());
 
     }
 
@@ -53,13 +50,19 @@ public abstract class AGraphNode {
      * @param graphEdge
      */
     public void removeEdge(GraphEdge graphEdge) {
-        for (Iterator<GraphEdge> iter = graphEdges.listIterator(); iter.hasNext(); ) {
-            GraphEdge currentGraphEdge = iter.next();
+        ArrayList<GraphEdge> toBeRemoved = new ArrayList<>();
+        for (GraphEdge currentGraphEdge : graphEdges) {
             if (currentGraphEdge.equals(graphEdge)) {
-                iter.remove();
-                updateObject();
+                currentGraphEdge.getOriginGraphNode().pane.getChildren().remove(currentGraphEdge.getGroup());
+                toBeRemoved.add(currentGraphEdge);
+                currentGraphEdge.getOriginGraphNode().updateObject();
+                currentGraphEdge.getDirectionGraphNode().updateObject();
             }
         }
+        for(GraphEdge current: toBeRemoved){
+            graphEdges.remove(current);
+        }
+
     }
 
     public Group getGroup() {
@@ -101,21 +104,19 @@ public abstract class AGraphNode {
      *
      * @return labeled circle
      */
-    private Group drawObject() {
-
-        group = new Group();
+    private Group drawObject(Group group) {
 
         double radius = Values.nodeRadius;
 
         Rectangle rectangle = new Rectangle(radius, radius);
 
-        int weights = getIncomingWeights();
+
         // if satisfied, draw different fill color
         rectangle.setFill(isSatisfied()? Values.circleFill : Values.circleFillunsat);
         rectangle.setStroke(Values.circleStroke);
 
         // Label circle with weight of the StandardGraphNode
-        Text text = new Text(Integer.toString(weights));
+        Text text = new Text(generateNodeText());
 
         pane.getChildren().addAll(rectangle, text);
         pane.setTranslateX(x - radius);
@@ -136,10 +137,8 @@ public abstract class AGraphNode {
         });
 
 
-
         Group backgroundGroup = generateBackgroundShape(x-radius*0.5, y-radius*0.5, radius);
         group.getChildren().addAll(backgroundGroup.getChildren());
-        System.out.println(backgroundGroup.getChildren().size());
         group.getChildren().add(pane);
         pane.toFront();
 
@@ -150,9 +149,12 @@ public abstract class AGraphNode {
      * Redraws Shape
      */
     public void updateObject() {
-        group.getChildren().clear();
+
+        //group.getChildren().clear();
         updateEdges();
-        group.getChildren().add(drawObject());
+        this.group.getChildren().clear();
+        this.group = drawObject(this.group);
+
 
     }
 
@@ -161,10 +163,24 @@ public abstract class AGraphNode {
      */
     private void updateEdges() {
         for (GraphEdge currentEdge : graphEdges) {
-            currentEdge.drawObject();
+            currentEdge.drawObject(currentEdge.getGroup());
             // Place Edge behind Node
             currentEdge.getGroup().toBack();
         }
+    }
+
+    public Group generateStandardBackgroundShape(double x, double y, double radius) {
+
+        // Calculate radius for circle intersecting the rectangle corners
+        double newRadius = Math.sqrt(0.5 * radius * radius);
+        Circle circle = new Circle(x, y, newRadius);
+        circle.setFill(Values.circleFill);
+        circle.setStroke(Values.circleStroke);
+
+        Group g = new Group();
+        g.getChildren().addAll(circle);
+
+        return g;
     }
 
 
@@ -183,6 +199,12 @@ public abstract class AGraphNode {
      * @param radius
      */
     public abstract Group generateBackgroundShape(double x, double y, double radius);
+
+    /**
+     * Generate the Label text for the Node
+     * @return text
+     */
+    public abstract String generateNodeText();
 
 
 }

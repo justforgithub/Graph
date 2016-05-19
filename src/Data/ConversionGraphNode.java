@@ -38,13 +38,16 @@ public class ConversionGraphNode extends AGraphNode {
         // Coloring
         leftShape.setFill(Values.Weight1Color);
         rightShape.setFill(Values.Weight2Color);
-        //rectangle = new Rectangle(x - radius*0.5 ,y - radius*0.5, radius, radius);
-        //rectangle.setFill(Values.circleFillunsat);
 
         Group g = new Group();
         g.getChildren().addAll(leftShape, rightShape);
 
         return g;
+    }
+
+    @Override
+    public String generateNodeText() {
+        return Integer.toString(getIncomingWeights());
     }
 
 }

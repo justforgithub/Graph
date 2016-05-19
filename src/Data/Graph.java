@@ -2,6 +2,7 @@ package Data;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import Data.Values.*;
 import UI.SelectionModel;
@@ -19,8 +20,9 @@ public class Graph {
     public ArrayList<GraphEdge> graphEdges;
     public ArrayList<AGraphNode> graphNodes;
     public PaneState graphState;
+    public NodeState nodeState;
     public int graphWeigth;
-    // Selcetion for Edge generation: first and second node
+    // Selection for Edge generation: first and second node
     public AGraphNode firstNodeSelection;
     public AGraphNode secondNodeSelection;
 
@@ -41,6 +43,30 @@ public class Graph {
         return graphNode;
     }
 
+    /**
+     * Generate Input Node at pos x, y
+     * @param x
+     * @param y
+     * @return
+     */
+    public AGraphNode generateInputGraphNode(double x, double y){
+        AGraphNode graphNode = new InputGraphNode(this, x + Values.nodeRadius , y + Values.nodeRadius);
+        graphNodes.add(graphNode);
+        return graphNode;
+    }
+
+    /**
+     * generate Output Node at pos x, y
+     * @param x
+     * @param y
+     * @return
+     */
+    public AGraphNode generateOutputGraphNode(double x, double y){
+        AGraphNode graphNode = new OutputGraphNode(this, x + Values.nodeRadius , y + Values.nodeRadius);
+        graphNodes.add(graphNode);
+        return graphNode;
+    }
+
 
     /**
      * Generate Conversion Graphnode at pos x, y
@@ -53,6 +79,8 @@ public class Graph {
         graphNodes.add(graphNode);
         return graphNode;
     }
+
+
 
     /**
      * Generate Edge between 2 Nodes with weight
@@ -93,9 +121,11 @@ public class Graph {
         graphNodes = new ArrayList<>();
         graphWeigth = standardWeight1;
         graphState = PaneState.IDLE;
+        nodeState = NodeState.STANDARD;
         firstNodeSelection = null;
         secondNodeSelection = null;
     }
+
 
 
     /**
@@ -106,29 +136,83 @@ public class Graph {
     public void deleteSelectedElements(SelectionModel selectionModel, Pane drawPane) {
         for (Iterator<Node> selectionIter = selectionModel.getIterator(); selectionIter.hasNext(); ) {
             Node node = selectionIter.next();
-            System.out.println(node);
             Group g = (Group) node;
-            System.out.println(g.getChildren().size());
-            // TODO: Remove Node
 
+            ArrayList<GraphEdge> toBeDeletedEdges = new ArrayList<>();
+            ArrayList<AGraphNode> toBeDeletedNodes = new ArrayList<>();
 
-            ArrayList<GraphEdge> toBeDeleted = new ArrayList<>();
             // remove edge
             for(GraphEdge currentGraphEdge: graphEdges){
                 if(node.equals(currentGraphEdge.getGroup())){
                     currentGraphEdge.getDirectionGraphNode().removeEdge(currentGraphEdge);
                     currentGraphEdge.getOriginGraphNode().removeEdge(currentGraphEdge);
-                    // Add to list to delete from graph later
-                    toBeDeleted.add(currentGraphEdge);
+                    // Add to list to delete from graph later (to avoid iterator issues)
+                    toBeDeletedEdges.add(currentGraphEdge);
                     drawPane.getChildren().remove(currentGraphEdge.getGroup());
                 }
             }
-            // delete from graph
-            for(GraphEdge currentDelete: toBeDeleted){
+            // delete edge from graph
+            for(GraphEdge currentDelete: toBeDeletedEdges){
                 graphEdges.remove(currentDelete);
             }
-        }
 
+            // remove node
+            for(AGraphNode currentGraphNode: graphNodes){
+                if(node.equals(currentGraphNode.getGroup())){
+                    ArrayList<GraphEdge> toBeDeletedEdgesInNode = new ArrayList<>();
+                    for(GraphEdge currentEdgeInNode: currentGraphNode.graphEdges){
+                        // Remove all Edges in Node first before deletion
+                        toBeDeletedEdgesInNode.add(currentEdgeInNode);
+                    }
+                    for (GraphEdge current: toBeDeletedEdgesInNode){
+                        current.getOriginGraphNode().removeEdge(current);
+                        current.getDirectionGraphNode().removeEdge(current);
+                    }
+                    // Add to list to delete from graph later (to avoid iterator issues)
+                    drawPane.getChildren().remove(currentGraphNode.getGroup());
+                }
+            }
+            // delete edge from graph
+            for(AGraphNode currentDelete: toBeDeletedNodes){
+                graphNodes.remove(currentDelete);
+            }
+        }
+    }
+
+    public List<Node> getGroups(){
+        List<Node> lis = new ArrayList<>();
+        for(AGraphNode node: graphNodes){
+            lis.add(node.getGroup());
+        }
+        return lis;
+    }
+
+    /**
+     * generate different Graph nodes based on Nodestate
+     * @param x
+     * @param y
+     * @return
+     */
+    public AGraphNode generateGraphNodeByState(double x, double y, NodeState state){
+        AGraphNode node = null;
+        switch (state){
+            case STANDARD:
+                node =  generateStandardGraphNode(x,y);
+                break;
+            case CONVERSION:
+                node = generateConversionGraphNode(x,y);
+                break;
+            case INPUT:
+                node =  generateInputGraphNode(x,y);
+                break;
+            case OUTPUT:
+                node = generateOutputGraphNode(x,y);
+                break;
+            default:
+                break;
+
+        }
+        return node;
     }
 }
 

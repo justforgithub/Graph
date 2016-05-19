@@ -30,11 +30,12 @@ public class GraphEdge {
         this.originGraphNode = originGraphNode;
         this.directionGraphNode = directionGraphNode;
         this.graph = graph;
-        this.group = drawObject();
+        this.group = drawObject(new Group());
 
         originGraphNode.addEdge(this);
         directionGraphNode.addEdge(this);
         directionGraphNode.updateObject();
+
 
     }
 
@@ -58,13 +59,13 @@ public class GraphEdge {
      * draw the Shape with color according to the weigth
      * @return
      */
-    public Group drawObject(){
+    public Group drawObject(Group edgeGroup){
+
+        edgeGroup.getChildren().clear();
 
         Color lineColor = weight < 2 ? Values.Weight1Color : Values.Weight2Color;
         Pane originPane = originGraphNode.getPane();
         Pane directionPane = directionGraphNode.getPane();
-
-        Group edgeGroup = new Group();
 
 
         // draw Arrow
@@ -251,8 +252,9 @@ public class GraphEdge {
         directionGraphNode = oldOrigin;
         originGraphNode.updateObject();
         directionGraphNode.updateObject();
-        group.getChildren().clear();
-        group.getChildren().addAll(drawObject().getChildren());
+
+        drawObject(group);
+
 
     }
 
@@ -268,6 +270,6 @@ public class GraphEdge {
         originGraphNode.updateObject();
         directionGraphNode.updateObject();
         group.getChildren().clear();
-        group.getChildren().addAll(drawObject().getChildren());
+        group.getChildren().addAll(drawObject(group).getChildren());
     }
 }

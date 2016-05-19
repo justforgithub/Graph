@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
  */
 public class Values {
 
-    public static final double nodeRadius = 20.0;
+    public static final double nodeRadius = 25.0;
 
     public static final double arrowRadius = 8.0;
 
@@ -25,6 +25,8 @@ public class Values {
 
     public enum PaneState {IDLE, GRAPHEDGE, GRAPHNODE, SELECTED};
 
+    public enum NodeState {STANDARD, CONVERSION, INPUT, OUTPUT};
+
     public static final int standardWeight1 = 1;
 
     public static final int standardWeight2 = 2;
@@ -34,4 +36,11 @@ public class Values {
     public static final String weightButtonSelected = "Edge Weight: 1";
 
     public static final String weightButtonUnselected = "Edge Weight: 2";
+
+    public static final String outputNodeText = "OUT";
+
+    public static final String inputNodeText = "IN";
+
+    public static final String fileNotFound = "File not found: ";
+
 }

@@ -81,6 +81,7 @@ public         class RubberBandSelection {
                 if(currentNode instanceof Group) {
                     Group node = (Group) currentNode;
                     if( node.getBoundsInParent().intersects( rect.getBoundsInParent())) {
+                        /*
 
                         if( event.isShiftDown()) {
 
@@ -96,6 +97,8 @@ public         class RubberBandSelection {
                         } else {
                             selectionModel.add( node);
                         }
+                        */
+                        selectionModel.add( node);
 
                     }
                 }
