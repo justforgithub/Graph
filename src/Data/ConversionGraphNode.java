@@ -1,6 +1,7 @@
 package Data;
 
 import javafx.scene.Group;
+import javafx.scene.control.Tooltip;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -16,9 +17,9 @@ public class ConversionGraphNode extends AGraphNode {
     }
 
     @Override
-    public boolean isSatisfied() {
+    public boolean isSatisfied(int weight) {
        // conversion graph is already satisfied with less incoming weight
-        return getIncomingWeights() + Values.standardWeight1 >= Values.standardSatisfied;
+        return getIncomingWeights() + Values.standardWeight1 + weight >= Values.standardSatisfied;
     }
 
     public Group generateBackgroundShape(double x, double y, double radius) {
@@ -54,5 +55,18 @@ public class ConversionGraphNode extends AGraphNode {
     public String toString() {
         return toStringHelper("C");
     }
+
+    @Override
+    public boolean isInvalidSwapsAllowed() {
+        return false;
+    }
+
+    @Override
+    public Tooltip generateTooltip() {
+        Tooltip tp = new Tooltip();
+        tp.setText(Values.conversionToolTipText);
+        return tp;
+    }
+
 
 }

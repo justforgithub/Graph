@@ -1,6 +1,7 @@
 package Data;
 
 import javafx.scene.Group;
+import javafx.scene.control.Tooltip;
 
 /**
  * Created by Deviltech on 19.05.2016.
@@ -15,16 +16,17 @@ public class OutputGraphNode extends AGraphNode {
     }
 
     @Override
-    public boolean isSatisfied() {
-        boolean isSatisfied = true;
+    public boolean isSatisfied(int weight) {
+        boolean isSat = true;
         for (GraphEdge currentGraphEdge : graphEdges) {
             // All edges have to be outgoing
-            if (!this.equals(currentGraphEdge.getOriginGraphNode())) {
-                isSatisfied = false;
+            if (!this.equals(currentGraphEdge.getDirectionGraphNode())) {
+                isSat = false;
                 break;
             }
         }
-        return isSatisfied;
+        // Return true, if all edges incoming or current incoming (design choice)
+        return isSat || weight > 0;
     }
 
     @Override
@@ -40,5 +42,17 @@ public class OutputGraphNode extends AGraphNode {
     @Override
     public String toString() {
         return toStringHelper("O");
+    }
+
+    @Override
+    public boolean isInvalidSwapsAllowed() {
+        return true;
+    }
+
+    @Override
+    public Tooltip generateTooltip() {
+        Tooltip tp = new Tooltip();
+        tp.setText(Values.outputToolTipText);
+        return tp;
     }
 }

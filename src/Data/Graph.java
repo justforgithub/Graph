@@ -6,11 +6,12 @@ import java.util.List;
 
 import Data.Values.*;
 import UI.SelectionModel;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-
-import static Data.Values.standardWeight1;
+import javafx.scene.text.Text;
 
 /**
  * Created by Deviltech on 02.05.2016.
@@ -21,13 +22,19 @@ public class Graph {
     public ArrayList<AGraphNode> graphNodes;
     public PaneState graphState;
     public NodeState nodeState;
-    public int graphWeigth;
+    public SimpleIntegerProperty graphWeigth;
+    public SimpleBooleanProperty isInvalidEdgeSwapAllowed;
     // Selection for Edge generation: first and second node
     public AGraphNode firstNodeSelection;
     public AGraphNode secondNodeSelection;
+    public Text generalText;
 
 
     public Graph(){
+        graphWeigth = new SimpleIntegerProperty();
+        isInvalidEdgeSwapAllowed = new SimpleBooleanProperty();
+        generalText = new Text();
+        isInvalidEdgeSwapAllowed.set(Values.isInvalidEdgeSwapAllowed);
         reset();
     }
 
@@ -75,7 +82,7 @@ public class Graph {
      * @return
      */
     public AGraphNode generateConversionGraphNode(double x, double y){
-        AGraphNode graphNode = new ConversionGraphNode(this, x, y);
+        AGraphNode graphNode = new ConversionGraphNode(this, x + Values.nodeRadius, y + Values.nodeRadius);
         graphNodes.add(graphNode);
         return graphNode;
     }
@@ -119,11 +126,12 @@ public class Graph {
     public void reset(){
         graphEdges = new ArrayList<>();
         graphNodes = new ArrayList<>();
-        graphWeigth = standardWeight1;
+        graphWeigth.set(Values.standardWeight1);
         graphState = PaneState.IDLE;
         nodeState = NodeState.STANDARD;
         firstNodeSelection = null;
         secondNodeSelection = null;
+        generalText.setText(Values.standardText);
     }
 
 
@@ -153,6 +161,7 @@ public class Graph {
             }
             // delete edge from graph
             for(GraphEdge currentDelete: toBeDeletedEdges){
+                currentDelete.getDirectionGraphNode().updateObject();
                 graphEdges.remove(currentDelete);
             }
 

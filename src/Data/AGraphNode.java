@@ -1,6 +1,7 @@
 package Data;
 
 import javafx.scene.Group;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -69,7 +70,7 @@ public abstract class AGraphNode {
         return group;
     }
 
-    public void SetCoordinates(double x, double y) {
+    public void setCoordinates(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -112,7 +113,7 @@ public abstract class AGraphNode {
 
 
         // if satisfied, draw different fill color
-        rectangle.setFill(isSatisfied()? Values.circleFill : Values.circleFillunsat);
+        rectangle.setFill(isSatisfied(0)? Values.circleFillsat : Values.circleFillunsat);
         rectangle.setStroke(Values.circleStroke);
 
         // Label circle with weight of the StandardGraphNode
@@ -136,6 +137,9 @@ public abstract class AGraphNode {
             }
         });
 
+
+        // install node specific tooltip
+        Tooltip.install(pane, generateTooltip());
 
         Group backgroundGroup = generateBackgroundShape(x-radius*0.5, y-radius*0.5, radius);
         group.getChildren().addAll(backgroundGroup.getChildren());
@@ -190,10 +194,10 @@ public abstract class AGraphNode {
 
 
     /**
-     * Checks if graph Node is satisfied
+     * Checks if graph Node is satisfied. Weight can be added and checked if still satisfied
      * @return
      */
-    public abstract boolean isSatisfied();
+    public abstract boolean isSatisfied(int weight);
 
     /**
      * generate Background Symbol for drawn Node
@@ -215,5 +219,16 @@ public abstract class AGraphNode {
      */
     public abstract String toString();
 
+    /**
+     * Does this Node allow invalid edge swaps? (In and Out nodes do)
+     * @return
+     */
+    public abstract boolean isInvalidSwapsAllowed();
+
+    /**
+     * Generates Node specific tooltip
+     * @return
+     */
+    public abstract Tooltip generateTooltip();
 
 }

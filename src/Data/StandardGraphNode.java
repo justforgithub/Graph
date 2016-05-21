@@ -2,6 +2,7 @@ package Data;
 
 
 import javafx.scene.Group;
+import javafx.scene.control.Tooltip;
 
 /**
  * Created by Deviltech on 28.04.2016.
@@ -16,8 +17,8 @@ public class StandardGraphNode extends AGraphNode {
     }
 
 
-    public boolean isSatisfied() {
-        return getIncomingWeights() >= 2;
+    public boolean isSatisfied(int weight) {
+        return (getIncomingWeights() + weight) >= Values.standardSatisfied;
     }
 
     public Group generateBackgroundShape(double x, double y, double radius) {
@@ -33,6 +34,18 @@ public class StandardGraphNode extends AGraphNode {
     @Override
     public String toString() {
         return toStringHelper("S");
+    }
+
+    @Override
+    public boolean isInvalidSwapsAllowed() {
+        return false;
+    }
+
+    @Override
+    public Tooltip generateTooltip() {
+        Tooltip tp = new Tooltip();
+        tp.setText(Values.standardToolTipText);
+        return tp;
     }
 
 }

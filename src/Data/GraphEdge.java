@@ -26,7 +26,6 @@ public class GraphEdge {
     private Group group;
 
 
-
     // Constructor
     public GraphEdge(int weight, AGraphNode originGraphNode, AGraphNode directionGraphNode, Graph graph) {
         this.weight = weight;
@@ -54,19 +53,20 @@ public class GraphEdge {
         return directionGraphNode;
     }
 
-    public Group getGroup(){
+    public Group getGroup() {
         return group;
     }
 
     /**
      * draw the Shape with color according to the weigth
+     *
      * @return
      */
-    public Group drawObject(Group edgeGroup){
+    public Group drawObject(Group edgeGroup) {
 
         edgeGroup.getChildren().clear();
 
-        Color lineColor = weight < 2 ? Values.Weight1Color : Values.Weight2Color;
+        Color lineColor = weight < Values.standardWeight2 ? Values.Weight1Color : Values.Weight2Color;
         Pane originPane = originGraphNode.getPane();
         Pane directionPane = directionGraphNode.getPane();
 
@@ -82,9 +82,9 @@ public class GraphEdge {
         // Edge to the own Node
         boolean isCircledEdge = originGraphNode.equals(directionGraphNode);
 
-        if(isCircledEdge){
+        if (isCircledEdge) {
             // Circle for circled edge
-            Circle circle = new Circle(Values.nodeRadius*0.75, Color.TRANSPARENT);
+            Circle circle = new Circle(Values.nodeRadius * 0.75, Color.TRANSPARENT);
             circle.setStroke(lineColor);
             circle.setStrokeWidth(Values.lineStroke);
 
@@ -99,15 +99,15 @@ public class GraphEdge {
             DoubleProperty arrowCenterY = new SimpleDoubleProperty();
 
             // calculate values for shapes
-            circleCenterX.set(originPane.getTranslateX()+0.5*Values.nodeRadius);
+            circleCenterX.set(originPane.getTranslateX() + 0.5 * Values.nodeRadius);
             circleCenterY.set(originPane.getTranslateY());
-            arrowCenterY.set(originPane.getTranslateY() - Values.nodeRadius + Values.arrowRadius*0.5);
+            arrowCenterY.set(originPane.getTranslateY() - Values.nodeRadius + Values.arrowRadius * 0.5);
 
             // listener for node movement
-            ChangeListener circleListener = (a, b, c) ->{
-                circleCenterX.set(originPane.getTranslateX()+0.5*Values.nodeRadius);
+            ChangeListener circleListener = (a, b, c) -> {
+                circleCenterX.set(originPane.getTranslateX() + 0.5 * Values.nodeRadius);
                 circleCenterY.set(originPane.getTranslateY());
-                arrowCenterY.set(originPane.getTranslateY() - Values.nodeRadius + Values.arrowRadius*0.5);
+                arrowCenterY.set(originPane.getTranslateY() - Values.nodeRadius + Values.arrowRadius * 0.5);
             };
 
             // bind circle and arrow to node movement
@@ -134,13 +134,14 @@ public class GraphEdge {
             });
             edgeGroup.getChildren().addAll(circle, arrow);
 
-        // normal edge
+            // normal edge
         } else {
 
             Line line = new Line();
             line.setStroke(lineColor);
             line.setFill(lineColor);
-            line.setStrokeWidth(Values.lineStroke);
+            line.setStrokeWidth(weight < Values.standardWeight2? Values.lineStroke : Values.lineStroke2);
+            //line.setStrokeWidth(Values.lineStroke);
 
             // not allowed to be clickable
             line.setMouseTransparent(true);
@@ -161,11 +162,11 @@ public class GraphEdge {
             DoubleProperty directionNodeCenterY = new SimpleDoubleProperty();
 
 
-            originNodeCenterX.set(originPane.getTranslateX() + originPane.getWidth()*0.5);
-            originNodeCenterY.set(originPane.getTranslateY() + originPane.getHeight()*0.5);
+            originNodeCenterX.set(originPane.getTranslateX() + originPane.getWidth() * 0.5);
+            originNodeCenterY.set(originPane.getTranslateY() + originPane.getHeight() * 0.5);
 
-            directionNodeCenterX.set(directionPane.getTranslateX() + directionPane.getWidth()*0.5);
-            directionNodeCenterY.set(directionPane.getTranslateY() + directionPane.getHeight()*0.5);
+            directionNodeCenterX.set(directionPane.getTranslateX() + directionPane.getWidth() * 0.5);
+            directionNodeCenterY.set(directionPane.getTranslateY() + directionPane.getHeight() * 0.5);
 
             // Change Arrow every time the line changes
             ChangeListener arrowListener = (a, b, c) -> {
@@ -173,11 +174,11 @@ public class GraphEdge {
                 centerY.set((line.startYProperty().doubleValue() + line.endYProperty().doubleValue()) / 2);
                 arrowAngle.set((Math.atan2(line.endYProperty().doubleValue() - line.startYProperty().doubleValue(), line.endXProperty().doubleValue() - line.startXProperty().doubleValue()) * 180 / 3.14));
 
-                originNodeCenterX.set(originPane.getTranslateX() + originPane.getWidth()*0.5);
-                originNodeCenterY.set(originPane.getTranslateY() + originPane.getHeight()*0.5);
+                originNodeCenterX.set(originPane.getTranslateX() + originPane.getWidth() * 0.5);
+                originNodeCenterY.set(originPane.getTranslateY() + originPane.getHeight() * 0.5);
 
-                directionNodeCenterX.set(directionPane.getTranslateX() + directionPane.getWidth()*0.5);
-                directionNodeCenterY.set(directionPane.getTranslateY() + directionPane.getHeight()*0.5);
+                directionNodeCenterX.set(directionPane.getTranslateX() + directionPane.getWidth() * 0.5);
+                directionNodeCenterY.set(directionPane.getTranslateY() + directionPane.getHeight() * 0.5);
             };
 
             // bind the line properties
@@ -237,23 +238,33 @@ public class GraphEdge {
     /**
      * swaps the arrow direction of the edge
      */
-    public void swapEdgeDirection(){
-        AGraphNode oldOrigin = originGraphNode;
-        AGraphNode oldDirection = directionGraphNode;
-        originGraphNode = oldDirection;
-        directionGraphNode = oldOrigin;
-        originGraphNode.updateObject();
-        directionGraphNode.updateObject();
+    public void swapEdgeDirection() {
+        // Is option to disable invalid edge swaps enabled?
+        if (graph.isInvalidEdgeSwapAllowed.get()
+                // If node itself allows invalid swaps, swap direction
+                //|| directionGraphNode.isInvalidSwapsAllowed()
+                // Are origin and direction graph node satisfied after direction swap?
+                || (originGraphNode.isSatisfied(weight)
+                && directionGraphNode.isSatisfied(-weight))) {
+            // Swap direction
+            AGraphNode oldOrigin = originGraphNode;
+            AGraphNode oldDirection = directionGraphNode;
+            originGraphNode = oldDirection;
+            directionGraphNode = oldOrigin;
+            originGraphNode.updateObject();
+            directionGraphNode.updateObject();
 
-        drawObject(group);
+            drawObject(group);
+        }
 
     }
 
     /**
      * toggle weight between weight 1 and 2
      */
-    public void toggleWeight(){
-        if(weight == standardWeight1){
+    public void toggleWeight() {
+        // Toggle
+        if (weight == standardWeight1) {
             weight = standardWeight2;
         } else {
             weight = standardWeight1;
@@ -262,10 +273,13 @@ public class GraphEdge {
         directionGraphNode.updateObject();
 
         drawObject(group);
+
     }
 
-    public String toString(){
+    public String toString() {
         return "EDGE\t" + Integer.toString(weight) + "\t" + Integer.toString(graph.graphNodes.indexOf(originGraphNode))
                 + "\t" + Integer.toString(graph.graphNodes.indexOf(directionGraphNode)) + "\n";
     }
+
+
 }

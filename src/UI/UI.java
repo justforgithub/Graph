@@ -13,7 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import Data.Values.PaneState;
@@ -36,6 +36,8 @@ public class UI extends Application {
 
         ToolBar buttonToolBar = new ToolBar();
         ToolBar nodeToolBar = new ToolBar();
+        ToolBar edgeToolBar = new ToolBar();
+        ToolBar selectionToolBar = new ToolBar();
 
         VBox mainBox = new VBox();
 
@@ -47,36 +49,7 @@ public class UI extends Application {
         Graph graph = new Graph();
 
 
-        drawPane.setOnMouseClicked((event) -> {
-            // On leftclick
-            if (event.getButton().equals(MouseButton.PRIMARY)) {
-                switch (graph.graphState) {
-                    // Idle: do nothing
-                    case IDLE:
-                        break;
 
-                    // Node: generate Graph on mouse position
-                    case GRAPHNODE:
-                        Group g = graph.generateGraphNodeByState(event.getX(), event.getY(), graph.nodeState).getGroup();
-                        drawPane.getChildren().add(g);
-                        break;
-
-                    // Edge: generate edge between 2 nodes, if possible
-                    case GRAPHEDGE:
-                        if (graph.secondNodeSelection != null) {
-                            drawPane.getChildren().add(graph.generateGraphEdge(graph.graphWeigth, graph.firstNodeSelection, graph.secondNodeSelection).getGroup());
-                            graph.firstNodeSelection.updateObject();
-                            graph.secondNodeSelection.updateObject();
-                            graph.firstNodeSelection = null;
-                            graph.secondNodeSelection = null;
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-        });
 
         // Bar and Menus
         MenuBar menuBar = new MenuBar();
@@ -93,15 +66,19 @@ public class UI extends Application {
         // Submenuitems
         MenuItem predefined1SubItem = new MenuItem("Simple Graph");
         MenuItem predefined2SubItem = new MenuItem("Conversion Example");
+        MenuItem predefined3SubItem = new MenuItem("Latch [TODO]");
+        MenuItem predefined4SubItem = new MenuItem("Crossover [TODO]");
+        MenuItem predefined5SubItem = new MenuItem("Terminator [TODO]");
+
 
         // Checkmenuitems
-        CheckMenuItem satCheckItem = new CheckMenuItem("allow invalid edge swaps [TODO]");
+        CheckMenuItem satCheckItem = new CheckMenuItem("allow invalid edge swaps");
 
         menuBar.getMenus().addAll(fileMenu, optionsMenu);
         fileMenu.getItems().addAll(clearItem, predefinedItem, loadItem, saveItem, exitItem);
         optionsMenu.getItems().addAll(satCheckItem);
 
-        predefinedItem.getItems().addAll(predefined1SubItem, predefined2SubItem);
+        predefinedItem.getItems().addAll(predefined1SubItem, predefined2SubItem, predefined3SubItem, predefined4SubItem, predefined5SubItem);
 
         // Togglebuttons
         ToggleButton cancelButton = new ToggleButton("Cancel [ESC]");
@@ -115,11 +92,26 @@ public class UI extends Application {
         ToggleButton inputNodeButton = new ToggleButton("Input");
         ToggleButton outputNodeButton = new ToggleButton("Output");
 
+        Button cancelEdgeButton = new Button("Cancel Edge");
         Button deleteSelectedButton = new Button("delete selected Elements");
+        Button moveSelectedButton = new Button("move selected Elements [TODO]");
 
+        Rectangle weightPreview = new Rectangle(20, 20, Values.Weight1Color);
 
-        weightButton.setStyle("-fx-background-color: red;");
-        weightButton.setText(Values.weightButtonSelected);
+        // Change Color of rectangle based on current edge weight
+        graph.graphWeigth.addListener(event -> {
+            if (graph.graphWeigth.getValue().equals(Values.standardWeight1)){
+                weightPreview.setFill(Values.Weight1Color);
+            } else {
+                weightPreview.setFill(Values.Weight2Color);
+            }
+        });
+
+        // Set isInvalidSwapAllowed based on check item
+        satCheckItem.setOnAction(event -> {
+            graph.isInvalidEdgeSwapAllowed.set(satCheckItem.isSelected());
+        });
+
 
         // buttonlist for unselection of other buttons on buttonclick
         ArrayList<ToggleButton> buttonList = new ArrayList<>();
@@ -134,15 +126,20 @@ public class UI extends Application {
         nodeButtonList.add(inputNodeButton);
         nodeButtonList.add(outputNodeButton);
 
+        // Misc setting stuff
+
         cancelButton.setSelected(true);
         standardNodeButton.setSelected(true);
+        standardNodeButton.setStyle("-fx-font-weight: bold");
+
+        cancelEdgeButton.setDisable(true);
+        weightButton.setText(Values.weightButtonSelected);
 
         satCheckItem.setSelected(true);
 
-        // TODO init
         // For titledPane for Mode Details
         Pane idlePane = new Pane();
-        idlePane.getChildren().add(new Text("placeholder"));
+        idlePane.getChildren().add(new VBox(graph.generalText));
         idlePane.setPrefHeight(100);
 
         Pane nodePane = new Pane();
@@ -150,15 +147,16 @@ public class UI extends Application {
         nodePane.setPrefHeight(100);
 
         Pane edgePane = new Pane();
-        edgePane.getChildren().addAll(weightButton);
+        edgePane.getChildren().addAll(edgeToolBar);
         edgePane.setPrefHeight(100);
 
         Pane selectPane = new Pane();
-        selectPane.getChildren().addAll(deleteSelectedButton);
+        selectPane.getChildren().addAll(selectionToolBar);
         selectPane.setPrefHeight(100);
 
         TitledPane titledPane = new TitledPane("General Details", idlePane);
         titledPane.setExpanded(false);
+
 
 
         // Set State to IDLE
@@ -171,10 +169,12 @@ public class UI extends Application {
             selectionModel.clear();
             titledPane.setContent(idlePane);
             titledPane.setText("General Details");
+            titledPane.setExpanded(false);
         };
 
         // Set State to GRAPHNODE
         java.util.function.Consumer makeGRAPHNODE = (value) -> {
+            titledPane.setExpanded(false);
             graph.graphState = PaneState.GRAPHNODE;
             nodeButton.setSelected(true);
             unselectOtherButtons(nodeButton, buttonList);
@@ -241,14 +241,18 @@ public class UI extends Application {
         // toggle between weights
         weightButton.selectedProperty().addListener(event -> {
             if (!weightButton.isSelected()) {
-                weightButton.setStyle("-fx-background-color: red;");
                 weightButton.setText(Values.weightButtonSelected);
-                graph.graphWeigth = 1;
+                graph.graphWeigth.set(Values.standardWeight1);
             } else {
                 weightButton.setText(Values.weightButtonUnselected);
-                weightButton.setStyle("-fx-background-color: lightblue;");
-                graph.graphWeigth = 2;
+                graph.graphWeigth.set(Values.standardWeight2);
             }
+        });
+
+        // Cancel first edge selection
+        cancelEdgeButton.setOnAction(event -> {
+            graph.firstNodeSelection = null;
+            cancelEdgeButton.setDisable(true);
         });
 
         // activate IDLE state
@@ -288,10 +292,51 @@ public class UI extends Application {
 
         //buttonToolBar.setPadding(new Insets(3, 5 ,3, 5));
         buttonToolBar.getItems().addAll(cancelButton, edgeButton, nodeButton, selectButton);
-
         nodeToolBar.getItems().addAll(standardNodeButton, conversionNodeButton, inputNodeButton, outputNodeButton);
+        edgeToolBar.getItems().addAll(weightButton, weightPreview, cancelEdgeButton);
+        selectionToolBar.getItems().addAll(deleteSelectedButton, moveSelectedButton);
+
 
         mainBox.getChildren().addAll(menuBar, buttonToolBar, titledPane, drawPane);
+
+        // Set pane click events
+        drawPane.setOnMouseClicked((event) -> {
+            // On leftclick
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                switch (graph.graphState) {
+                    // Idle: do nothing
+                    case IDLE:
+                        break;
+
+                    // Node: generate Graph on mouse position
+                    case GRAPHNODE:
+                        Group g = graph.generateGraphNodeByState(event.getX(), event.getY(), graph.nodeState).getGroup();
+                        drawPane.getChildren().add(g);
+                        break;
+
+                    // Edge: generate edge between 2 nodes, if possible
+                    case GRAPHEDGE:
+                        if (graph.secondNodeSelection != null) {
+                            // Enable cancel button for edge cancel
+                            cancelEdgeButton.setDisable(true);
+                            drawPane.getChildren().add(graph.generateGraphEdge(graph.graphWeigth.getValue(), graph.firstNodeSelection, graph.secondNodeSelection).getGroup());
+                            graph.firstNodeSelection.updateObject();
+                            graph.secondNodeSelection.updateObject();
+                            graph.firstNodeSelection = null;
+                            graph.secondNodeSelection = null;
+                        } else {
+                            // Disable cancel button, no cancel possible
+                            cancelEdgeButton.setDisable(false);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        });
+
+        // MENU ITEMS
 
         // Reset the view
         clearItem.setOnAction((event) -> {
@@ -357,6 +402,7 @@ public class UI extends Application {
         });
 
 
+
         Scene scene = new Scene(mainBox, 800, 800);
 
         // Add Selection Listener to Pane
@@ -388,6 +434,7 @@ public class UI extends Application {
         deleteSelectedButton.setOnAction((event) -> {
             graph.deleteSelectedElements(selectionModel, drawPane);
         });
+
 
         primaryStage.setTitle("Graph Stuff");
         primaryStage.setScene(scene);

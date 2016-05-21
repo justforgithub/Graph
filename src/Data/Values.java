@@ -9,13 +9,17 @@ public class Values {
 
     public static final double nodeRadius = 25.0;
 
-    public static final double arrowRadius = 8.0;
+    public static final double arrowRadius = 10.0;
 
-    public static final double lineStroke = 2.0;
+    public static final double lineStroke = 3.0;
+
+    public static final double lineStroke2 = lineStroke *2;
 
     public static final Color circleFill = Color.WHITE;
 
-    public static final Color circleFillunsat = Color.YELLOW;
+    public static final Color circleFillsat = Color.LIGHTGREEN;
+
+    public static final Color circleFillunsat = Color.WHITE;
 
     public static final Color circleStroke = Color.BLACK;
 
@@ -33,14 +37,31 @@ public class Values {
 
     public static final int standardSatisfied = standardWeight2;
 
-    public static final String weightButtonSelected = "Edge Weight: 1";
+    public static final boolean isInvalidEdgeSwapAllowed = false;
 
-    public static final String weightButtonUnselected = "Edge Weight: 2";
+    public static final String weightButtonSelected = "Edge Weight: " + Integer.toString(standardWeight1);
+
+    public static final String weightButtonUnselected = "Edge Weight: " + Integer.toString(standardWeight2);
 
     public static final String outputNodeText = "OUT";
 
     public static final String inputNodeText = "IN";
 
     public static final String fileNotFound = "File not found: ";
+
+    public static final String standardText = "Change Edge Direction: RIGHT CLICK on edge arrow \n"
+            + "Toggle Edge weight: SHIFT + RIGHT CLICK on edge arrow";
+
+    public static final String conversionToolTipText = "Conversion Node \n"  + "Converts an Edge with weight "
+            + Integer.toString(standardWeight1) + " to weight " + Integer.toString(standardWeight2)
+            + ".\nIs satisfied with incoming weight of at least " + Integer.toString(standardWeight1) + ".";
+
+    public static final String standardToolTipText =  "Standard Node \n" + "Is satisfied with incoming edge weight of "
+            + Integer.toString(standardSatisfied) + ".";
+
+    public static final String outputToolTipText = "Satisfied Out Node \n" + "Is satisfied when all edges are incoming.";
+
+    public static final String inputToolTipText = "Satisfied In Node \n" + "Is satisfied when all edges are outgoing.";
+
 
 }
