@@ -7,6 +7,10 @@ import javafx.scene.paint.Color;
  */
 public class Values {
 
+    public static final double paneWidth = 800;
+
+    public static final double paneHeigth = 750;
+
     public static final double nodeRadius = 25.0;
 
     public static final double arrowRadius = 10.0;

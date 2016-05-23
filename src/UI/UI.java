@@ -44,7 +44,7 @@ public class UI extends Application {
         Pane drawPane = new Pane();
 
         drawPane.setStyle("-fx-background-color: lightblue;");
-        drawPane.setPrefSize(800, 750);
+        drawPane.setPrefSize(Values.paneWidth, Values.paneHeigth);
 
         Graph graph = new Graph();
 
@@ -64,11 +64,11 @@ public class UI extends Application {
         MenuItem exitItem = new MenuItem("Exit");
 
         // Submenuitems
-        MenuItem predefined1SubItem = new MenuItem("Simple Graph");
+        MenuItem predefined1SubItem = new MenuItem("Undefined Graph [TODO]");
         MenuItem predefined2SubItem = new MenuItem("Conversion Example");
-        MenuItem predefined3SubItem = new MenuItem("Latch [TODO]");
+        MenuItem predefined3SubItem = new MenuItem("Latch");
         MenuItem predefined4SubItem = new MenuItem("Crossover [TODO]");
-        MenuItem predefined5SubItem = new MenuItem("Terminator [TODO]");
+        MenuItem predefined5SubItem = new MenuItem("Terminator ");
 
 
         // Checkmenuitems
@@ -135,7 +135,7 @@ public class UI extends Application {
         cancelEdgeButton.setDisable(true);
         weightButton.setText(Values.weightButtonSelected);
 
-        satCheckItem.setSelected(true);
+        satCheckItem.setSelected(Values.isInvalidEdgeSwapAllowed);
 
         // For titledPane for Mode Details
         Pane idlePane = new Pane();
@@ -169,6 +169,7 @@ public class UI extends Application {
             selectionModel.clear();
             titledPane.setContent(idlePane);
             titledPane.setText("General Details");
+            cancelEdgeButton.setDisable(true);
             titledPane.setExpanded(false);
         };
 
@@ -394,6 +395,20 @@ public class UI extends Application {
         predefined2SubItem.setOnAction(event -> {
             graph.reset();
             ExampleGraphs.conversionExample(graph);
+            fillPanewithGraphElements(drawPane, graph);
+        });
+
+        // third Graph example
+        predefined3SubItem.setOnAction(event -> {
+            graph.reset();
+            ExampleGraphs.LatchExample(graph);
+            fillPanewithGraphElements(drawPane, graph);
+        });
+
+        // second Graph example
+        predefined5SubItem.setOnAction(event -> {
+            graph.reset();
+            ExampleGraphs.terminatorExample(graph);
             fillPanewithGraphElements(drawPane, graph);
         });
 
