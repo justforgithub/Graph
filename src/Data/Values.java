@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
  */
 public class Values {
 
-    public static final double paneWidth = 800;
+    public static final double paneWidth = 900;
 
     public static final double paneHeigth = 750;
 
@@ -66,6 +66,8 @@ public class Values {
     public static final String outputToolTipText = "Satisfied Out Node \n" + "Is satisfied when all edges are incoming.";
 
     public static final String inputToolTipText = "Satisfied In Node \n" + "Is satisfied when all edges are outgoing.";
+
+    public static final String rightClickEdgeText = "<- Right click on arrow to change the direction of an edge";
 
 
 }

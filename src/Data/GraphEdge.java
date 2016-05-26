@@ -37,6 +37,8 @@ public class GraphEdge {
         originGraphNode.addEdge(this);
         directionGraphNode.addEdge(this);
         directionGraphNode.updateObject();
+        originGraphNode.updateObject();
+
 
 
     }
@@ -161,12 +163,11 @@ public class GraphEdge {
             // Property for origin node Center Y
             DoubleProperty directionNodeCenterY = new SimpleDoubleProperty();
 
+            originNodeCenterX.set(originPane.getTranslateX() + Values.nodeRadius*0.5);
+            originNodeCenterY.set(originPane.getTranslateY() + Values.nodeRadius*0.5);
 
-            originNodeCenterX.set(originPane.getTranslateX() + originPane.getWidth() * 0.5);
-            originNodeCenterY.set(originPane.getTranslateY() + originPane.getHeight() * 0.5);
-
-            directionNodeCenterX.set(directionPane.getTranslateX() + directionPane.getWidth() * 0.5);
-            directionNodeCenterY.set(directionPane.getTranslateY() + directionPane.getHeight() * 0.5);
+            directionNodeCenterX.set(directionPane.getTranslateX() + Values.nodeRadius*0.5);
+            directionNodeCenterY.set(directionPane.getTranslateY() + Values.nodeRadius*0.5);
 
             // Change Arrow every time the line changes
             ChangeListener arrowListener = (a, b, c) -> {
@@ -174,11 +175,12 @@ public class GraphEdge {
                 centerY.set((line.startYProperty().doubleValue() + line.endYProperty().doubleValue()) / 2);
                 arrowAngle.set((Math.atan2(line.endYProperty().doubleValue() - line.startYProperty().doubleValue(), line.endXProperty().doubleValue() - line.startXProperty().doubleValue()) * 180 / 3.14));
 
-                originNodeCenterX.set(originPane.getTranslateX() + originPane.getWidth() * 0.5);
-                originNodeCenterY.set(originPane.getTranslateY() + originPane.getHeight() * 0.5);
 
-                directionNodeCenterX.set(directionPane.getTranslateX() + directionPane.getWidth() * 0.5);
-                directionNodeCenterY.set(directionPane.getTranslateY() + directionPane.getHeight() * 0.5);
+                originNodeCenterX.set(originPane.getTranslateX() + Values.nodeRadius*0.5);
+                originNodeCenterY.set(originPane.getTranslateY() + Values.nodeRadius*0.5);
+
+                directionNodeCenterX.set(directionPane.getTranslateX() + Values.nodeRadius*0.5);
+                directionNodeCenterY.set(directionPane.getTranslateY() + Values.nodeRadius*0.5);
             };
 
             // bind the line properties

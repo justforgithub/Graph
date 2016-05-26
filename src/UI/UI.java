@@ -64,11 +64,11 @@ public class UI extends Application {
         MenuItem exitItem = new MenuItem("Exit");
 
         // Submenuitems
-        MenuItem predefined1SubItem = new MenuItem("Undefined Graph [TODO]");
-        MenuItem predefined2SubItem = new MenuItem("Conversion Example");
+        MenuItem predefined1SubItem = new MenuItem("Example");
+        MenuItem predefined2SubItem = new MenuItem("Conversion");
         MenuItem predefined3SubItem = new MenuItem("Latch");
-        MenuItem predefined4SubItem = new MenuItem("Crossover [TODO]");
-        MenuItem predefined5SubItem = new MenuItem("Terminator ");
+        MenuItem predefined4SubItem = new MenuItem("Crossover");
+        MenuItem predefined5SubItem = new MenuItem("Terminator");
 
 
         // Checkmenuitems
@@ -387,38 +387,51 @@ public class UI extends Application {
         // first Graph example
         predefined1SubItem.setOnAction(event -> {
             graph.reset();
-            ExampleGraphs.example1(graph);
+            drawPane.getChildren().clear();
+            ExampleGraphs.example1(graph, drawPane);
             fillPanewithGraphElements(drawPane, graph);
         });
 
         // second Graph example
         predefined2SubItem.setOnAction(event -> {
             graph.reset();
-            ExampleGraphs.conversionExample(graph);
+            drawPane.getChildren().clear();
+            ExampleGraphs.conversionExample(graph, drawPane);
             fillPanewithGraphElements(drawPane, graph);
         });
 
         // third Graph example
         predefined3SubItem.setOnAction(event -> {
             graph.reset();
-            ExampleGraphs.LatchExample(graph);
+            drawPane.getChildren().clear();
+            ExampleGraphs.LatchExample(graph, drawPane);
             fillPanewithGraphElements(drawPane, graph);
         });
 
-        // second Graph example
+        // fourth Graph example
+        predefined4SubItem.setOnAction(event -> {
+            graph.reset();
+            drawPane.getChildren().clear();
+            ExampleGraphs.CrossoverExample(graph, drawPane);
+            fillPanewithGraphElements(drawPane, graph);
+        });
+
+        // fifth Graph example
         predefined5SubItem.setOnAction(event -> {
             graph.reset();
-            ExampleGraphs.terminatorExample(graph);
+            drawPane.getChildren().clear();
+            ExampleGraphs.terminatorExample(graph, drawPane);
             fillPanewithGraphElements(drawPane, graph);
         });
 
+        // Close Application
         exitItem.setOnAction((event) -> {
             Platform.exit();
         });
 
 
 
-        Scene scene = new Scene(mainBox, 800, 800);
+        Scene scene = new Scene(mainBox, Values.paneWidth, Values.paneHeigth + 50);
 
         // Add Selection Listener to Pane
         new RubberBandSelection(drawPane, selectionModel, graph);
@@ -477,7 +490,6 @@ public class UI extends Application {
      */
     private void fillPanewithGraphElements(Pane pane, Graph graph) {
         // fill DrawPane with edges and Nodes of the graph
-        pane.getChildren().clear();
         for (GraphEdge currentEdge : graph.graphEdges) {
             pane.getChildren().add(currentEdge.getGroup());
         }

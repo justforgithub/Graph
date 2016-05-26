@@ -159,11 +159,7 @@ public class Graph {
                     drawPane.getChildren().remove(currentGraphEdge.getGroup());
                 }
             }
-            // delete edge from graph
-            for(GraphEdge currentDelete: toBeDeletedEdges){
-                currentDelete.getDirectionGraphNode().updateObject();
-                graphEdges.remove(currentDelete);
-            }
+
 
             // remove node
             for(AGraphNode currentGraphNode: graphNodes){
@@ -176,15 +172,25 @@ public class Graph {
                     for (GraphEdge current: toBeDeletedEdgesInNode){
                         current.getOriginGraphNode().removeEdge(current);
                         current.getDirectionGraphNode().removeEdge(current);
+                        toBeDeletedEdges.add(current);
+                        drawPane.getChildren().remove(current.getGroup());
                     }
                     // Add to list to delete from graph later (to avoid iterator issues)
                     drawPane.getChildren().remove(currentGraphNode.getGroup());
+                    toBeDeletedNodes.add(currentGraphNode);
                 }
             }
             // delete edge from graph
             for(AGraphNode currentDelete: toBeDeletedNodes){
                 graphNodes.remove(currentDelete);
             }
+
+            // delete edge from graph
+            for(GraphEdge currentDelete: toBeDeletedEdges){
+                currentDelete.getDirectionGraphNode().updateObject();
+                graphEdges.remove(currentDelete);
+            }
+
         }
     }
 
