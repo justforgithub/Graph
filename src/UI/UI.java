@@ -32,6 +32,8 @@ public class UI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        final double exampleScale = Values.standardScale1;
+
         SelectionModel selectionModel = new SelectionModel();
 
         ToolBar buttonToolBar = new ToolBar();
@@ -46,7 +48,7 @@ public class UI extends Application {
         drawPane.setStyle("-fx-background-color: lightblue;");
         drawPane.setPrefSize(Values.paneWidth, Values.paneHeigth);
 
-        Graph graph = new Graph();
+        Graph graph = new Graph(drawPane);
 
 
 
@@ -64,21 +66,26 @@ public class UI extends Application {
         MenuItem exitItem = new MenuItem("Exit");
 
         // Submenuitems
-        MenuItem predefined1SubItem = new MenuItem("Example");
-        MenuItem predefined2SubItem = new MenuItem("Conversion");
-        MenuItem predefined3SubItem = new MenuItem("Latch");
-        MenuItem predefined4SubItem = new MenuItem("Crossover");
-        MenuItem predefined5SubItem = new MenuItem("Terminator");
+        MenuItem predefinedExampleSubItem = new MenuItem("Example");
+        MenuItem predefinedConvSubItem = new MenuItem("Conversion");
+        MenuItem predefinedLatchSubItem = new MenuItem("Latch");
+        MenuItem predefinedCrossSubItem = new MenuItem("Crossover");
+        MenuItem predefinedTermSubItem = new MenuItem("Terminator");
+        MenuItem predefinedHalfCSubItem = new MenuItem("Half Crossover");
+        MenuItem predefinedProtOrSubItem = new MenuItem("Protected OR");
+
 
 
         // Checkmenuitems
         CheckMenuItem satCheckItem = new CheckMenuItem("allow invalid edge swaps");
+        CheckMenuItem isSmallScale = new CheckMenuItem("smaller Example scale");
 
         menuBar.getMenus().addAll(fileMenu, optionsMenu);
         fileMenu.getItems().addAll(clearItem, predefinedItem, loadItem, saveItem, exitItem);
-        optionsMenu.getItems().addAll(satCheckItem);
+        optionsMenu.getItems().addAll(satCheckItem, isSmallScale);
 
-        predefinedItem.getItems().addAll(predefined1SubItem, predefined2SubItem, predefined3SubItem, predefined4SubItem, predefined5SubItem);
+        predefinedItem.getItems().addAll(predefinedExampleSubItem, predefinedConvSubItem, predefinedLatchSubItem,
+                predefinedCrossSubItem, predefinedTermSubItem, predefinedHalfCSubItem, predefinedProtOrSubItem);
 
         // Togglebuttons
         ToggleButton cancelButton = new ToggleButton("Cancel [ESC]");
@@ -94,7 +101,6 @@ public class UI extends Application {
 
         Button cancelEdgeButton = new Button("Cancel Edge");
         Button deleteSelectedButton = new Button("delete selected Elements");
-        Button moveSelectedButton = new Button("move selected Elements [TODO]");
 
         Rectangle weightPreview = new Rectangle(20, 20, Values.Weight1Color);
 
@@ -110,6 +116,19 @@ public class UI extends Application {
         // Set isInvalidSwapAllowed based on check item
         satCheckItem.setOnAction(event -> {
             graph.isInvalidEdgeSwapAllowed.set(satCheckItem.isSelected());
+            if(satCheckItem.isSelected()){
+                // if this mode is allowed, no exercise can be finished
+                graph.isUnicornPossible = false;
+            }
+        });
+
+        // Set scale of graph examples (for smaller screens)
+        isSmallScale.setOnAction(event -> {
+            if(isSmallScale.selectedProperty().getValue()){
+                graph.exampleScale=Values.standardScale2;
+            } else {
+                graph.exampleScale=Values.standardScale1;
+            }
         });
 
 
@@ -295,7 +314,7 @@ public class UI extends Application {
         buttonToolBar.getItems().addAll(cancelButton, edgeButton, nodeButton, selectButton);
         nodeToolBar.getItems().addAll(standardNodeButton, conversionNodeButton, inputNodeButton, outputNodeButton);
         edgeToolBar.getItems().addAll(weightButton, weightPreview, cancelEdgeButton);
-        selectionToolBar.getItems().addAll(deleteSelectedButton, moveSelectedButton);
+        selectionToolBar.getItems().addAll(deleteSelectedButton);
 
 
         mainBox.getChildren().addAll(menuBar, buttonToolBar, titledPane, drawPane);
@@ -385,7 +404,7 @@ public class UI extends Application {
         });
 
         // first Graph example
-        predefined1SubItem.setOnAction(event -> {
+        predefinedExampleSubItem.setOnAction(event -> {
             graph.reset();
             drawPane.getChildren().clear();
             ExampleGraphs.example1(graph, drawPane);
@@ -393,7 +412,7 @@ public class UI extends Application {
         });
 
         // second Graph example
-        predefined2SubItem.setOnAction(event -> {
+        predefinedConvSubItem.setOnAction(event -> {
             graph.reset();
             drawPane.getChildren().clear();
             ExampleGraphs.conversionExample(graph, drawPane);
@@ -401,7 +420,7 @@ public class UI extends Application {
         });
 
         // third Graph example
-        predefined3SubItem.setOnAction(event -> {
+        predefinedLatchSubItem.setOnAction(event -> {
             graph.reset();
             drawPane.getChildren().clear();
             ExampleGraphs.LatchExample(graph, drawPane);
@@ -409,7 +428,7 @@ public class UI extends Application {
         });
 
         // fourth Graph example
-        predefined4SubItem.setOnAction(event -> {
+        predefinedCrossSubItem.setOnAction(event -> {
             graph.reset();
             drawPane.getChildren().clear();
             ExampleGraphs.CrossoverExample(graph, drawPane);
@@ -417,10 +436,26 @@ public class UI extends Application {
         });
 
         // fifth Graph example
-        predefined5SubItem.setOnAction(event -> {
+        predefinedTermSubItem.setOnAction(event -> {
             graph.reset();
             drawPane.getChildren().clear();
             ExampleGraphs.terminatorExample(graph, drawPane);
+            fillPanewithGraphElements(drawPane, graph);
+        });
+
+        // sixth Graph example
+        predefinedHalfCSubItem.setOnAction(event -> {
+            graph.reset();
+            drawPane.getChildren().clear();
+            ExampleGraphs.HalfCrossoverExample(graph, drawPane);
+            fillPanewithGraphElements(drawPane, graph);
+        });
+
+        // seventh Graph example
+        predefinedProtOrSubItem.setOnAction(event -> {
+            graph.reset();
+            drawPane.getChildren().clear();
+            ExampleGraphs.ProtectedOrExample(graph, drawPane);
             fillPanewithGraphElements(drawPane, graph);
         });
 
@@ -432,6 +467,8 @@ public class UI extends Application {
 
 
         Scene scene = new Scene(mainBox, Values.paneWidth, Values.paneHeigth + 50);
+
+
 
         // Add Selection Listener to Pane
         new RubberBandSelection(drawPane, selectionModel, graph);

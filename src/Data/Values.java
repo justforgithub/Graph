@@ -11,6 +11,10 @@ public class Values {
 
     public static final double paneHeigth = 750;
 
+    public static final double standardScale1 = 1.0;
+
+    public static final double standardScale2 = 0.8;
+
     public static final double nodeRadius = 25.0;
 
     public static final double arrowRadius = 10.0;
@@ -68,6 +72,10 @@ public class Values {
     public static final String inputToolTipText = "Satisfied In Node \n" + "Is satisfied when all edges are outgoing.";
 
     public static final String rightClickEdgeText = "<- Right click on arrow to change the direction of an edge";
+
+    public static final String exampleSolved = " You solved it! ";
+
+    public static final String unicorn = "Img/uniwalk_crop.gif";
 
 
 }

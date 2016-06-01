@@ -256,6 +256,9 @@ public class GraphEdge {
             originGraphNode.updateObject();
             directionGraphNode.updateObject();
 
+            // Check is solution for exercise is done
+            graph.checkForUnicornSolution();
+
             drawObject(group);
         }
 
@@ -273,6 +276,7 @@ public class GraphEdge {
         }
         originGraphNode.updateObject();
         directionGraphNode.updateObject();
+
 
         drawObject(group);
 

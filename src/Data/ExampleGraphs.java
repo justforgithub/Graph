@@ -1,23 +1,50 @@
 package Data;
 
+import javafx.animation.FadeTransition;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
+
+import java.util.ArrayList;
 
 /**
  * Created by Deviltech on 03.05.2016.
  */
 public class ExampleGraphs {
 
+
+    public static FadeTransition generateUnicorn(double x, double y, double scale){
+        Image unicorn = new Image(Values.unicorn);
+        ImageView unicornView = new ImageView();
+        unicornView.setX(x*scale);
+        unicornView.setY(y*scale);
+        unicornView.setImage(unicorn);
+        FadeTransition ft = new FadeTransition(Duration.millis(500), unicornView);
+        ft.setFromValue(0.2);
+        ft.setToValue(1);
+        ft.setCycleCount(1);
+        ft.setAutoReverse(false);
+
+        return ft;
+    }
+
+
     public static void example1(Graph graph, Pane pane){
 
-        AGraphNode nodeIn = graph.generateInputGraphNode(50, 150);
-        AGraphNode node1 = graph.generateStandardGraphNode(150, 150);
-        AGraphNode node2 = graph.generateStandardGraphNode(250, 150);
-        AGraphNode node3 = graph.generateStandardGraphNode(250, 250);
-        AGraphNode node4 = graph.generateStandardGraphNode(350, 50);
-        AGraphNode node5 = graph.generateStandardGraphNode(450, 150);
-        AGraphNode nodeOut = graph.generateOutputGraphNode(550, 150);
+        double scale = graph.exampleScale;
+
+        AGraphNode nodeIn = graph.generateInputGraphNode(50*scale, 150*scale);
+        AGraphNode node1 = graph.generateStandardGraphNode(150*scale, 150*scale);
+        AGraphNode node2 = graph.generateStandardGraphNode(250*scale, 150*scale);
+        AGraphNode node3 = graph.generateStandardGraphNode(250*scale, 250*scale);
+        AGraphNode node4 = graph.generateStandardGraphNode(350*scale, 50*scale);
+        AGraphNode node5 = graph.generateStandardGraphNode(450*scale, 150*scale);
+        AGraphNode nodeOut = graph.generateOutputGraphNode(550*scale, 150*scale);
 
         graph.generateGraphEdge(1, node1, nodeIn);
         graph.generateGraphEdge(1, node1, node1);
@@ -30,33 +57,50 @@ public class ExampleGraphs {
         graph.generateGraphEdge(1, node2, node5);
         graph.generateGraphEdge(1, node5, nodeOut);
 
-        AGraphNode nodeText1 = graph.generateStandardGraphNode(50, 400);
-        AGraphNode nodeText2 = graph.generateStandardGraphNode(50, 600);
+        AGraphNode nodeText1 = graph.generateStandardGraphNode(50*scale, 400*scale);
+        AGraphNode nodeText2 = graph.generateStandardGraphNode(50*scale, 600*scale);
         graph.generateGraphEdge(2, nodeText1, nodeText2);
         graph.generateGraphEdge(2, nodeText1, nodeText1);
         graph.generateGraphEdge(2, nodeText2, nodeText2);
 
         Text text = new Text(Values.rightClickEdgeText);
-        text.setX(80);
-        text.setY(520);
+        text.setX(80*scale);
+        text.setY(520*scale);
         text.setFont(Font.font(text.getFont().getName(), 20));
 
         pane.getChildren().add(text);
 
+        ArrayList<AGraphNode> graphNodes = new ArrayList<>();
+        graphNodes.add(nodeIn);
+        graphNodes.add(nodeOut);
+        graphNodes.add(node1);
+        graphNodes.add(node2);
+        graphNodes.add(node3);
+        graphNodes.add(node4);
+        graphNodes.add(node5);
+
+        graph.exerciseNodes = graphNodes;
+
+        boolean[] bools = {true, true, true, true, true, true, true};
+        graph.exerciseSolutions = bools;
+        graph.isUnicornPossible = true;
 
     }
 
     public static void conversionExample(Graph graph, Pane pane){
-        AGraphNode leftUp = graph.generateOutputGraphNode(50, 50);
-        AGraphNode rightUp = graph.generateStandardGraphNode(250, 50);
-        AGraphNode mid = graph.generateStandardGraphNode(150, 150);
-        AGraphNode botLeft = graph.generateInputGraphNode(50, 250);
-        AGraphNode botMid = graph.generateStandardGraphNode(150, 250);
-        AGraphNode botRight = graph.generateOutputGraphNode(250, 250);
 
-        AGraphNode conv1 = graph.generateInputGraphNode(50, 450);
-        AGraphNode conv2 = graph.generateConversionGraphNode(150, 450);
-        AGraphNode conv3 = graph.generateOutputGraphNode(250, 450);
+        double scale = graph.exampleScale;
+
+        AGraphNode leftUp = graph.generateOutputGraphNode(50*scale, 50*scale);
+        AGraphNode rightUp = graph.generateStandardGraphNode(250*scale, 50*scale);
+        AGraphNode mid = graph.generateStandardGraphNode(150*scale, 150*scale);
+        AGraphNode botLeft = graph.generateInputGraphNode(50*scale, 250*scale);
+        AGraphNode botMid = graph.generateStandardGraphNode(150*scale, 250*scale);
+        AGraphNode botRight = graph.generateOutputGraphNode(250*scale, 250*scale);
+
+        AGraphNode conv1 = graph.generateInputGraphNode(50*scale, 450*scale);
+        AGraphNode conv2 = graph.generateConversionGraphNode(150*scale, 450*scale);
+        AGraphNode conv3 = graph.generateOutputGraphNode(250*scale, 450*scale);
 
         graph.generateGraphEdge(1, mid, leftUp);
         graph.generateGraphEdge(2, rightUp, mid);
@@ -72,16 +116,16 @@ public class ExampleGraphs {
 
         // Part 3
 
-        AGraphNode topNode1 = graph.generateInputGraphNode(400, 50);
-        AGraphNode topNode2 = graph.generateStandardGraphNode(500, 50);
-        AGraphNode topNode3 = graph.generateOutputGraphNode(600, 50);
-        AGraphNode midTopNode = graph.generateStandardGraphNode(500, 150);
-        AGraphNode midNode1 = graph.generateStandardGraphNode(400, 250);
-        AGraphNode midNode2 = graph.generateStandardGraphNode(600, 250);
-        AGraphNode midBotNode = graph.generateStandardGraphNode(500, 350);
-        AGraphNode botNode1 = graph.generateInputGraphNode(400, 450);
-        AGraphNode botNode2 = graph.generateStandardGraphNode(500, 450);
-        AGraphNode botNode3 = graph.generateStandardGraphNode(600, 450);
+        AGraphNode topNode1 = graph.generateInputGraphNode(400*scale, 50*scale);
+        AGraphNode topNode2 = graph.generateStandardGraphNode(500*scale, 50*scale);
+        AGraphNode topNode3 = graph.generateOutputGraphNode(600*scale, 50*scale);
+        AGraphNode midTopNode = graph.generateStandardGraphNode(500*scale, 150*scale);
+        AGraphNode midNode1 = graph.generateStandardGraphNode(400*scale, 250*scale);
+        AGraphNode midNode2 = graph.generateStandardGraphNode(600*scale, 250*scale);
+        AGraphNode midBotNode = graph.generateStandardGraphNode(500*scale, 350*scale);
+        AGraphNode botNode1 = graph.generateInputGraphNode(400*scale, 450*scale);
+        AGraphNode botNode2 = graph.generateStandardGraphNode(500*scale, 450*scale);
+        AGraphNode botNode3 = graph.generateOutputGraphNode(600*scale, 450*scale);
 
         graph.generateGraphEdge(1, topNode1, topNode2);
         graph.generateGraphEdge(2, topNode2, topNode3);
@@ -97,13 +141,16 @@ public class ExampleGraphs {
     }
 
     public static void terminatorExample(Graph graph, Pane pane){
+
+        double scale = graph.exampleScale;
+
         // unconstrained blue
-        AGraphNode inNode = graph.generateInputGraphNode(200, 50);
-        AGraphNode topNode = graph.generateStandardGraphNode(200, 150);
-        AGraphNode midLeftNode = graph.generateStandardGraphNode(100, 250);
-        AGraphNode midMidNode = graph.generateStandardGraphNode(200, 250);
-        AGraphNode midRightNode = graph.generateStandardGraphNode(300, 250);
-        AGraphNode botNode = graph.generateStandardGraphNode(200, 350);
+        AGraphNode inNode = graph.generateInputGraphNode(200*scale, 50*scale);
+        AGraphNode topNode = graph.generateStandardGraphNode(200*scale, 150*scale);
+        AGraphNode midLeftNode = graph.generateStandardGraphNode(100*scale, 250*scale);
+        AGraphNode midMidNode = graph.generateStandardGraphNode(200*scale, 250*scale);
+        AGraphNode midRightNode = graph.generateStandardGraphNode(300*scale, 250*scale);
+        AGraphNode botNode = graph.generateStandardGraphNode(200*scale, 350*scale);
 
         graph.generateGraphEdge(2, topNode, inNode);
         graph.generateGraphEdge(2, midLeftNode, topNode);
@@ -115,12 +162,12 @@ public class ExampleGraphs {
         graph.generateGraphEdge(2, botNode, midRightNode);
 
         // forced inward blue
-        AGraphNode inNode2 = graph.generateInputGraphNode(200+300, 50);
-        AGraphNode topNode2 = graph.generateStandardGraphNode(200+300, 150);
-        AGraphNode midLeftNode2 = graph.generateStandardGraphNode(100+300, 250);
-        AGraphNode midMidNode2 = graph.generateStandardGraphNode(200+300, 250);
-        AGraphNode midRightNode2 = graph.generateStandardGraphNode(300+300, 250);
-        AGraphNode botNode2 = graph.generateStandardGraphNode(200+300, 350);
+        AGraphNode inNode2 = graph.generateInputGraphNode(500*scale, 50*scale);
+        AGraphNode topNode2 = graph.generateStandardGraphNode(500*scale, 150*scale);
+        AGraphNode midLeftNode2 = graph.generateStandardGraphNode(400*scale, 250*scale);
+        AGraphNode midMidNode2 = graph.generateStandardGraphNode(500*scale, 250*scale);
+        AGraphNode midRightNode2 = graph.generateStandardGraphNode(600*scale, 250*scale);
+        AGraphNode botNode2 = graph.generateStandardGraphNode(500*scale, 350*scale);
 
         graph.generateGraphEdge(2, inNode2, topNode2);
         graph.generateGraphEdge(2, topNode2, midLeftNode2);
@@ -132,28 +179,28 @@ public class ExampleGraphs {
         graph.generateGraphEdge(1, botNode2, midRightNode2);
 
         // forced red
-        AGraphNode inNode3 = graph.generateInputGraphNode(200 + 150, 50+300);
-        AGraphNode topNode3 = graph.generateStandardGraphNode(200 + 150, 150+300);
-        AGraphNode midLeftNode3 = graph.generateStandardGraphNode(100 + 150, 250+ 300);
-        AGraphNode midMidNode3 = graph.generateStandardGraphNode(200 + 150, 250 + 300);
-        AGraphNode midRightNode3 = graph.generateStandardGraphNode(300 + 150, 250 + 300);
-        AGraphNode botNode3 = graph.generateStandardGraphNode(200 + 150, 350 + 300);
+        AGraphNode inNode3 = graph.generateInputGraphNode(350*scale, 350*scale);
+        AGraphNode topNode3 = graph.generateStandardGraphNode(350*scale, 450*scale);
+        AGraphNode midLeftNode3 = graph.generateStandardGraphNode(250*scale, 550*scale);
+        AGraphNode midMidNode3 = graph.generateStandardGraphNode(350*scale, 550*scale);
+        AGraphNode midRightNode3 = graph.generateStandardGraphNode(450*scale, 550*scale);
+        AGraphNode botNode3 = graph.generateStandardGraphNode(350*scale, 650*scale);
 
         graph.generateGraphEdge(1, inNode3, topNode3);
 
         Text text1 = new Text("Forced Inward Red");
-        text1.setX(280);
-        text1.setY(700);
+        text1.setX(280*scale);
+        text1.setY(700*scale);
         text1.setFont(Font.font(text1.getFont().getName(), 20));
 
         Text text2 = new Text("Inconstrained Blue");
-        text2.setX(150);
-        text2.setY(20);
+        text2.setX(150*scale);
+        text2.setY(20*scale);
         text2.setFont(Font.font(text2.getFont().getName(), 20));
 
         Text text3 = new Text("Forced Inward Blue");
-        text3.setX(450);
-        text3.setY(20);
+        text3.setX(450*scale);
+        text3.setY(20*scale);
         text3.setFont(Font.font(text3.getFont().getName(), 20));
 
         pane.getChildren().addAll(text1, text2, text3);
@@ -161,12 +208,15 @@ public class ExampleGraphs {
     }
 
     public static void LatchExample(Graph graph, Pane pane){
-        AGraphNode inNode = graph.generateInputGraphNode(100, 250);
-        AGraphNode midNode = graph.generateStandardGraphNode(300, 250);
-        AGraphNode topNode = graph.generateStandardGraphNode(400, 150);
-        AGraphNode botNode = graph.generateStandardGraphNode(400, 350);
-        AGraphNode topOutNode = graph.generateOutputGraphNode(600, 150);
-        AGraphNode botOutNode = graph.generateOutputGraphNode(600, 350);
+
+        double scale = graph.exampleScale;
+
+        AGraphNode inNode = graph.generateInputGraphNode(100*scale, 250*scale);
+        AGraphNode midNode = graph.generateStandardGraphNode(300*scale, 250*scale);
+        AGraphNode topNode = graph.generateStandardGraphNode(400*scale, 150*scale);
+        AGraphNode botNode = graph.generateStandardGraphNode(400*scale, 350*scale);
+        AGraphNode topOutNode = graph.generateOutputGraphNode(600*scale, 150*scale);
+        AGraphNode botOutNode = graph.generateOutputGraphNode(600*scale, 350*scale);
 
         graph.generateGraphEdge(2, midNode, inNode);
         graph.generateGraphEdge(2, topNode, midNode);
@@ -176,41 +226,55 @@ public class ExampleGraphs {
         graph.generateGraphEdge(1, botNode, botOutNode);
 
         Text text1 = new Text("Lock");
-        text1.setX(200);
-        text1.setY(240);
+        text1.setX(200*scale);
+        text1.setY(240*scale);
         text1.setFont(Font.font(text1.getFont().getName(), 20));
 
         Text text2 = new Text("State A");
-        text2.setX(650);
-        text2.setY(165);
+        text2.setX(650*scale);
+        text2.setY(165*scale);
         text2.setFont(Font.font(text2.getFont().getName(), 20));
 
         Text text3 = new Text("State B");
-        text3.setX(650);
-        text3.setY(365);
+        text3.setX(650*scale);
+        text3.setY(365*scale);
         text3.setFont(Font.font(text3.getFont().getName(), 20));
 
         pane.getChildren().addAll(text1, text2, text3);
+
+        ArrayList<AGraphNode> graphNodes = new ArrayList<>();
+        graphNodes.add(inNode);
+        graphNodes.add(topOutNode);
+        graphNodes.add(botOutNode);
+
+        graph.exerciseNodes = graphNodes;
+
+        boolean[] bools = {false, true, false};
+        graph.exerciseSolutions = bools;
+        graph.isUnicornPossible = true;
     }
 
     public static void CrossoverExample(Graph graph, Pane pane){
-        AGraphNode InLeft = graph.generateInputGraphNode(50, 250);
-        AGraphNode InTop = graph.generateInputGraphNode(450, 50);
-        AGraphNode InBot = graph.generateInputGraphNode(450, 450);
-        AGraphNode InRight = graph.generateInputGraphNode(850, 250);
 
-        AGraphNode LL = graph.generateStandardGraphNode(150, 250);
-        AGraphNode LT = graph.generateStandardGraphNode(250, 150);
-        AGraphNode LB = graph.generateStandardGraphNode(250, 350);
-        AGraphNode LR = graph.generateStandardGraphNode(350, 250);
+        double scale = graph.exampleScale;
 
-        AGraphNode MT = graph.generateStandardGraphNode(450, 150);
-        AGraphNode MB = graph.generateStandardGraphNode(450, 350);
+        AGraphNode InLeft = graph.generateInputGraphNode(50*scale, 250*scale);
+        AGraphNode InTop = graph.generateInputGraphNode(450*scale, 50*scale);
+        AGraphNode InBot = graph.generateInputGraphNode(450*scale, 450*scale);
+        AGraphNode InRight = graph.generateInputGraphNode(850*scale, 250*scale);
 
-        AGraphNode RL = graph.generateStandardGraphNode(550, 250);
-        AGraphNode RT = graph.generateStandardGraphNode(650, 150);
-        AGraphNode RB = graph.generateStandardGraphNode(650, 350);
-        AGraphNode RR = graph.generateStandardGraphNode(750, 250);
+        AGraphNode LL = graph.generateStandardGraphNode(150*scale, 250*scale);
+        AGraphNode LT = graph.generateStandardGraphNode(250*scale, 150*scale);
+        AGraphNode LB = graph.generateStandardGraphNode(250*scale, 350*scale);
+        AGraphNode LR = graph.generateStandardGraphNode(350*scale, 250*scale);
+
+        AGraphNode MT = graph.generateStandardGraphNode(450*scale, 150*scale);
+        AGraphNode MB = graph.generateStandardGraphNode(450*scale, 350*scale);
+
+        AGraphNode RL = graph.generateStandardGraphNode(550*scale, 250*scale);
+        AGraphNode RT = graph.generateStandardGraphNode(650*scale, 150*scale);
+        AGraphNode RB = graph.generateStandardGraphNode(650*scale, 350*scale);
+        AGraphNode RR = graph.generateStandardGraphNode(750*scale, 250*scale);
 
         graph.generateGraphEdge(2, InLeft, LL);
         graph.generateGraphEdge(1, LL, LT);
@@ -234,6 +298,110 @@ public class ExampleGraphs {
         graph.generateGraphEdge(1, RB, RR);
         graph.generateGraphEdge(2, RR, InRight);
 
+        ArrayList<AGraphNode> graphNodes = new ArrayList<>();
+        graphNodes.add(InLeft);
+        graphNodes.add(InTop);
+        graphNodes.add(InRight);
+        graphNodes.add(InBot);
+
+        graph.exerciseNodes = graphNodes;
+
+        boolean[] bools = {false, false, true, true};
+        graph.exerciseSolutions = bools;
+        graph.isUnicornPossible = true;
 
         }
+
+    public static void HalfCrossoverExample(Graph graph, Pane pane){
+
+        double scale = graph.exampleScale;
+
+        AGraphNode InL = graph.generateInputGraphNode(50*scale, 350*scale);
+        AGraphNode InT = graph.generateInputGraphNode(450*scale, 50*scale);
+        AGraphNode InR = graph.generateInputGraphNode(850*scale, 350*scale);
+        AGraphNode InB = graph.generateInputGraphNode(450*scale, 650*scale);
+
+        AGraphNode ConL = graph.generateConversionGraphNode(150*scale, 350*scale);
+        AGraphNode ConT = graph.generateConversionGraphNode(450*scale, 150*scale);
+        AGraphNode ConR = graph.generateConversionGraphNode(750*scale, 350*scale);
+        AGraphNode ConB = graph.generateConversionGraphNode(450*scale, 550*scale);
+
+        AGraphNode Left = graph.generateStandardGraphNode(250*scale, 350*scale);
+        AGraphNode Right = graph.generateStandardGraphNode(650*scale, 350*scale);
+
+        AGraphNode TL = graph.generateStandardGraphNode(350*scale, 250*scale);
+        AGraphNode TM = graph.generateStandardGraphNode(450*scale, 250*scale);
+        AGraphNode TR = graph.generateStandardGraphNode(550*scale, 250*scale);
+
+        AGraphNode BL = graph.generateStandardGraphNode(350*scale, 450*scale);
+        AGraphNode BM = graph.generateStandardGraphNode(450*scale, 450*scale);
+        AGraphNode BR = graph.generateStandardGraphNode(550*scale, 450*scale);
+
+        graph.generateGraphEdge(1, InL, ConL);
+        graph.generateGraphEdge(2, ConL, Left);
+        graph.generateGraphEdge(1, TL, Left);
+        graph.generateGraphEdge(1, TL, BL);
+        graph.generateGraphEdge(1, Left, BL);
+        graph.generateGraphEdge(1, InT, ConT);
+        graph.generateGraphEdge(2, ConT, TM);
+        graph.generateGraphEdge(2, TM, TL);
+        graph.generateGraphEdge(2, TM, TR);
+        graph.generateGraphEdge(1, ConB, InB);
+        graph.generateGraphEdge(2, BM, ConB);
+        graph.generateGraphEdge(2, BL, BM);
+        graph.generateGraphEdge(2, BM, BR);
+        graph.generateGraphEdge(1, ConR, InR);
+        graph.generateGraphEdge(2, Right, ConR);
+        graph.generateGraphEdge(1, TR, Right);
+        graph.generateGraphEdge(1, TR, BR);
+        graph.generateGraphEdge(1, BR, Right);
+
+        ArrayList<AGraphNode> graphNodes = new ArrayList<>();
+        graphNodes.add(InL);
+        graphNodes.add(InT);
+        graphNodes.add(InR);
+        graphNodes.add(InB);
+
+        graph.exerciseNodes = graphNodes;
+
+        boolean[] bools = {false, false, true, true};
+        graph.exerciseSolutions = bools;
+        graph.isUnicornPossible = true;
+
+    }
+
+    public static void ProtectedOrExample(Graph graph, Pane pane){
+
+        double scale = graph.exampleScale;
+
+        AGraphNode InT = graph.generateInputGraphNode(450*scale, 50*scale);
+        AGraphNode InL = graph.generateInputGraphNode(50*scale, 350*scale);
+        AGraphNode InR = graph.generateInputGraphNode(850*scale, 350*scale);
+
+        AGraphNode ConL = graph.generateConversionGraphNode(150*scale, 350*scale);
+        AGraphNode ConR = graph.generateConversionGraphNode(750*scale, 350*scale);
+
+        AGraphNode TL = graph.generateStandardGraphNode(250*scale, 150*scale);
+        AGraphNode BL = graph.generateStandardGraphNode(250*scale, 350*scale);
+        AGraphNode ML = graph.generateStandardGraphNode(350*scale, 250*scale);
+        AGraphNode TM = graph.generateStandardGraphNode(450*scale, 150*scale);
+        AGraphNode TR = graph.generateStandardGraphNode(650*scale, 150*scale);
+        AGraphNode BR = graph.generateStandardGraphNode(650*scale, 350*scale);
+        AGraphNode MR = graph.generateStandardGraphNode(550*scale, 250*scale);
+
+        graph.generateGraphEdge(2, ConL, InL);
+        graph.generateGraphEdge(1, BL, ConL);
+        graph.generateGraphEdge(1, BL, TL);
+        graph.generateGraphEdge(2, TL, ML);
+        graph.generateGraphEdge(2, ML, BL);
+        graph.generateGraphEdge(2, InT, TM);
+        graph.generateGraphEdge(1, TM, TR);
+        graph.generateGraphEdge(1, TM, TL);
+        graph.generateGraphEdge(1, TR, BR);
+        graph.generateGraphEdge(2, ML, MR);
+        graph.generateGraphEdge(2, MR, TR);
+        graph.generateGraphEdge(2, MR, BR);
+        graph.generateGraphEdge(1, BR, ConR);
+        graph.generateGraphEdge(2, ConR, InR);
+    }
 }

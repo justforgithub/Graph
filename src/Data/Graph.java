@@ -6,10 +6,12 @@ import java.util.List;
 
 import Data.Values.*;
 import UI.SelectionModel;
+import javafx.animation.FadeTransition;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
@@ -18,10 +20,15 @@ import javafx.scene.text.Text;
  */
 public class Graph {
 
+    public Pane pane;
     public ArrayList<GraphEdge> graphEdges;
     public ArrayList<AGraphNode> graphNodes;
+    public ArrayList<AGraphNode> exerciseNodes;
+    public boolean[] exerciseSolutions;
     public PaneState graphState;
     public NodeState nodeState;
+    public double exampleScale;
+    public boolean isUnicornPossible;
     public SimpleIntegerProperty graphWeigth;
     public SimpleBooleanProperty isInvalidEdgeSwapAllowed;
     // Selection for Edge generation: first and second node
@@ -30,7 +37,9 @@ public class Graph {
     public Text generalText;
 
 
-    public Graph(){
+    public Graph(Pane pane){
+        this.pane = pane;
+        exampleScale = Values.standardScale1;
         graphWeigth = new SimpleIntegerProperty();
         isInvalidEdgeSwapAllowed = new SimpleBooleanProperty();
         generalText = new Text();
@@ -124,11 +133,14 @@ public class Graph {
      * Completely reset the graph
      */
     public void reset(){
+        exerciseNodes = new ArrayList<>();
+        exerciseSolutions = new boolean[0];
         graphEdges = new ArrayList<>();
         graphNodes = new ArrayList<>();
         graphWeigth.set(Values.standardWeight1);
         graphState = PaneState.IDLE;
         nodeState = NodeState.STANDARD;
+        isUnicornPossible = false;
         firstNodeSelection = null;
         secondNodeSelection = null;
         generalText.setText(Values.standardText);
@@ -228,6 +240,39 @@ public class Graph {
 
         }
         return node;
+    }
+
+    /**
+     * When unicorn exercise is solved, play animation
+     */
+    public void checkForUnicornSolution(){
+        if(isUnicornPossible){
+            System.out.println("Test solution...");
+            if(isExerciseSatisfied()){
+                FadeTransition ft = ExampleGraphs.generateUnicorn(0, 0, exampleScale);
+                pane.getChildren().add(ft.getNode());
+                Tooltip tooltip = new Tooltip(Values.exampleSolved);
+                Tooltip.install(ft.getNode(), tooltip);
+                ft.play();
+
+                exerciseSolutions =  new boolean[0];
+                exerciseNodes = new ArrayList<>();
+                isUnicornPossible = false;
+            }
+        }
+    }
+
+    /**
+     * checks if given exercise booleans are done
+     * @return
+     */
+    private boolean isExerciseSatisfied(){
+        for(int i = 0; i < exerciseSolutions.length; i++){
+           if(!exerciseSolutions[i] == exerciseNodes.get(i).isSatisfied(0)){
+               return false;
+           }
+        }
+        return true;
     }
 }
 
