@@ -188,12 +188,12 @@ public class ExampleGraphs {
 
         graph.generateGraphEdge(1, inNode3, topNode3);
 
-        Text text1 = new Text("Forced Inward Red");
+        Text text1 = new Text("Unconstrained Red");
         text1.setX(280*scale);
         text1.setY(700*scale);
         text1.setFont(Font.font(text1.getFont().getName(), 20));
 
-        Text text2 = new Text("Inconstrained Blue");
+        Text text2 = new Text("Unconstrained Blue");
         text2.setX(150*scale);
         text2.setY(20*scale);
         text2.setFont(Font.font(text2.getFont().getName(), 20));

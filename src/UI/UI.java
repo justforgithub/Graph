@@ -501,7 +501,7 @@ public class UI extends Application {
         });
 
 
-        primaryStage.setTitle("Graph Stuff");
+        primaryStage.setTitle("Graph Tool");
         primaryStage.setScene(scene);
         primaryStage.show();
 
