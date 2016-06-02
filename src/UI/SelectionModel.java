@@ -38,7 +38,8 @@ public class SelectionModel {
     }
 
     public void log() {
-        System.out.println("Items in model: " + Arrays.asList(selection.toArray()));
+
+        //System.out.println("Items in model: " + Arrays.asList(selection.toArray()));
     }
 
     public Iterator<Node> getIterator(){

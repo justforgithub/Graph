@@ -32,8 +32,6 @@ public class UI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        final double exampleScale = Values.standardScale1;
-
         SelectionModel selectionModel = new SelectionModel();
 
         ToolBar buttonToolBar = new ToolBar();
@@ -45,13 +43,10 @@ public class UI extends Application {
 
         Pane drawPane = new Pane();
 
-        drawPane.setStyle("-fx-background-color: lightblue;");
+        drawPane.setStyle(Values.paneStyle);
         drawPane.setPrefSize(Values.paneWidth, Values.paneHeigth);
 
         Graph graph = new Graph(drawPane);
-
-
-
 
         // Bar and Menus
         MenuBar menuBar = new MenuBar();
@@ -89,8 +84,8 @@ public class UI extends Application {
 
         // Togglebuttons
         ToggleButton cancelButton = new ToggleButton("Cancel [ESC]");
-        ToggleButton nodeButton = new ToggleButton("Create Node [ALT]");
-        ToggleButton edgeButton = new ToggleButton("Create Edge [CTRL]");
+        ToggleButton nodeButton = new ToggleButton("Create Node [R]");
+        ToggleButton edgeButton = new ToggleButton("Create Edge [E]");
         ToggleButton selectButton = new ToggleButton("Select Elements");
         ToggleButton weightButton = new ToggleButton("Edge weight: 1");
 
@@ -149,7 +144,7 @@ public class UI extends Application {
 
         cancelButton.setSelected(true);
         standardNodeButton.setSelected(true);
-        standardNodeButton.setStyle("-fx-font-weight: bold");
+        standardNodeButton.setStyle(Values.boldStyle);
 
         cancelEdgeButton.setDisable(true);
         weightButton.setText(Values.weightButtonSelected);
@@ -158,20 +153,21 @@ public class UI extends Application {
 
         // For titledPane for Mode Details
         Pane idlePane = new Pane();
-        idlePane.getChildren().add(new VBox(graph.generalText));
-        idlePane.setPrefHeight(100);
+        VBox generalTextBox = new VBox(graph.generalText);
+        idlePane.getChildren().add(generalTextBox);
+        idlePane.setPrefHeight(Values.titledPaneHeight);
 
         Pane nodePane = new Pane();
         nodePane.getChildren().addAll(nodeToolBar);
-        nodePane.setPrefHeight(100);
+        nodePane.setPrefHeight(Values.titledPaneHeight);
 
         Pane edgePane = new Pane();
         edgePane.getChildren().addAll(edgeToolBar);
-        edgePane.setPrefHeight(100);
+        edgePane.setPrefHeight(Values.titledPaneHeight);
 
         Pane selectPane = new Pane();
         selectPane.getChildren().addAll(selectionToolBar);
-        selectPane.setPrefHeight(100);
+        selectPane.setPrefHeight(Values.titledPaneHeight);
 
         TitledPane titledPane = new TitledPane("General Details", idlePane);
         titledPane.setExpanded(false);
@@ -309,13 +305,10 @@ public class UI extends Application {
             }
         });
 
-
-        //buttonToolBar.setPadding(new Insets(3, 5 ,3, 5));
         buttonToolBar.getItems().addAll(cancelButton, edgeButton, nodeButton, selectButton);
         nodeToolBar.getItems().addAll(standardNodeButton, conversionNodeButton, inputNodeButton, outputNodeButton);
         edgeToolBar.getItems().addAll(weightButton, weightPreview, cancelEdgeButton);
         selectionToolBar.getItems().addAll(deleteSelectedButton);
-
 
         mainBox.getChildren().addAll(menuBar, buttonToolBar, titledPane, drawPane);
 
@@ -460,14 +453,13 @@ public class UI extends Application {
         });
 
         // Close Application
-        exitItem.setOnAction((event) -> {
-            Platform.exit();
-        });
-
-
+        exitItem.setOnAction(event -> Platform.exit());
 
         Scene scene = new Scene(mainBox, Values.paneWidth, Values.paneHeigth + 50);
 
+
+        drawPane.prefHeightProperty().bind(scene.heightProperty());
+        drawPane.prefWidthProperty().bind(scene.widthProperty());
 
 
         // Add Selection Listener to Pane
@@ -480,11 +472,11 @@ public class UI extends Application {
                     // IDLE
                     makeIDLE.accept(null);
                     break;
-                case ALT:
+                case R:
                     // GRAPHNODE
                     makeGRAPHNODE.accept(null);
                     break;
-                case CONTROL:
+                case E:
                     // GRAPHEDGE
                     makeGRAPHEDGE.accept(null);
                 default:
@@ -501,7 +493,7 @@ public class UI extends Application {
         });
 
 
-        primaryStage.setTitle("Graph Tool");
+        primaryStage.setTitle(Values.stageTitle);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -511,6 +503,7 @@ public class UI extends Application {
      * Iterate over buttons and unselect the others
      */
     private void unselectOtherButtons(ToggleButton button, ArrayList<ToggleButton> otherButtons) {
+
         for (ToggleButton currentButton : otherButtons) {
             if (!button.equals(currentButton)) {
                 currentButton.setSelected(false);

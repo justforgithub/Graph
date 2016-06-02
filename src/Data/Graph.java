@@ -41,7 +41,9 @@ public class Graph {
         this.pane = pane;
         exampleScale = Values.standardScale1;
         graphWeigth = new SimpleIntegerProperty();
+        graphWeigth.set(Values.standardWeight1);
         isInvalidEdgeSwapAllowed = new SimpleBooleanProperty();
+        graphState = PaneState.IDLE;
         generalText = new Text();
         isInvalidEdgeSwapAllowed.set(Values.isInvalidEdgeSwapAllowed);
         reset();
@@ -137,8 +139,6 @@ public class Graph {
         exerciseSolutions = new boolean[0];
         graphEdges = new ArrayList<>();
         graphNodes = new ArrayList<>();
-        graphWeigth.set(Values.standardWeight1);
-        graphState = PaneState.IDLE;
         nodeState = NodeState.STANDARD;
         isUnicornPossible = false;
         firstNodeSelection = null;

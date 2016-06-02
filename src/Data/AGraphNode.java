@@ -125,11 +125,9 @@ public abstract class AGraphNode {
         pane.setOnMousePressed((event) -> {
             if (graph.graphState == Values.PaneState.GRAPHEDGE) {
                 if (graph.firstNodeSelection == null) {
-                    System.out.println("first selected");
                     graph.firstNodeSelection = this;
                 } else {
                     if (graph.isEdgeExistent(graph.firstNodeSelection, this)) {
-                        System.out.println("Edge existant");
                     } else {
                         graph.secondNodeSelection = this;
                     }

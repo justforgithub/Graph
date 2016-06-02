@@ -23,6 +23,8 @@ public class Values {
 
     public static final double lineStroke2 = lineStroke *2;
 
+    public static double titledPaneHeight = 150.0;
+
     public static final Color circleFill = Color.WHITE;
 
     public static final Color circleFillsat = Color.LIGHTGREEN;
@@ -77,5 +79,10 @@ public class Values {
 
     public static final String unicorn = "Img/uniwalk_crop.gif";
 
+    public static final String paneStyle = "-fx-background-color: lightblue;";
+
+    public static final String boldStyle = "-fx-font-weight: bold";
+
+    public static final String stageTitle = "Graph Tool Version 1.1";
 
 }
